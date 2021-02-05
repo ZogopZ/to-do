@@ -1,17 +1,28 @@
 package com.example.myapplication;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.text.InputType;
-import android.view.View;
-import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
+import android.media.Image;
 import android.os.Bundle;
-import androidx.constraintlayout.widget.ConstraintLayout;
+import android.renderscript.ScriptGroup;
+import android.text.InputFilter;
+import android.text.InputType;
+import android.text.Spanned;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.gridlayout.widget.GridLayout;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,20 +31,49 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         final Context context = getApplicationContext();
-//
-//        final ConstraintLayout constraintLayout = findViewById(R.id.rootContainer);
-//        final Resolution resolution = new Resolution();
-////        final ImageView imageView = new ImageView(this);
-////        imageView.setLayoutParams(new ConstraintLayout.LayoutParams(resolution.width, resolution.height/2));
-//        final List<ImageView> imageViews = new ArrayList<ImageView>();
+
         final ImageButton addButton = findViewById(R.id.addButton);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final TextView t1 = new TextView(context);
-                t1.append("tsvis");
+                GridLayout.LayoutParams myParams = new GridLayout.LayoutParams();
+                myParams.width = 50;                    /* rescales check-box's width */
+                myParams.height = 50;                   /* rescales check-box's height */
+                myParams.setGravity(Gravity.CENTER);    /* aligns views to gridLayout's center */
+                myParams.topMargin = 10;
+//                final ImageView t1 = new ImageView(context);
                 final GridLayout gridLayout = findViewById(R.id.gridLayout);
-                gridLayout.addView(t1);
+                final EditText t2 = new EditText(context);
+                t2.setInputType(InputType.TYPE_CLASS_NUMBER);
+                int maxLength = 1;
+                InputFilter[] filterArray = new InputFilter[1];
+                filterArray[0] = new InputFilter.LengthFilter(maxLength);
+                t2.setFilters(filterArray);
+                t2.setImeOptions(EditorInfo.IME_ACTION_DONE);
+                t2.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                        if (actionId == EditorInfo.IME_ACTION_DONE) {
+                            addButton.requestFocus();
+                            reOrderViews(gridLayout);
+                            hideKeyboard(context, t2);
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+//                t2.setLayoutParams(myParams);
+//                t1.setBackgroundResource(R.drawable.checkbox_icon);
+//                t1.setLayoutParams(myParams);           /* applies layoutParams to view */
+//                gridLayout.addView(t1);
+                gridLayout.addView(t2);
+//                t2.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//
+//                    }
+//                });
+
+
 //                final ImageView imageView = new ImageView(context);
 //                imageViews.add(imageView);
 //                ImageView currentView = imageViews.get(imageViews.size() - 1);
@@ -83,6 +123,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    public void reOrderViews(GridLayout gridLayout) {
+        View childView = new View(this);
+//        Array
+        for (int i = 0; i < gridLayout.getChildCount(); i++) {
+            childView = gridLayout.getChildAt(i);
+            if (childView instanceof EditText) {
+//                childView.getId()
+                System.out.println(((EditText) childView).getText().toString());
+            }
+        }
+    }
+
+    public static void hideKeyboard(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     static final class Resolution {
