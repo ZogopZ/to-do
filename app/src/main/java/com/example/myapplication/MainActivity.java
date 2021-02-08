@@ -5,24 +5,23 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.media.Image;
 import android.os.Bundle;
-import android.renderscript.ScriptGroup;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.text.Spanned;
-import android.util.Log;
+import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.gridlayout.widget.GridLayout;
-
-import java.io.File;
+import java.util.*;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -43,55 +42,13 @@ public class MainActivity extends AppCompatActivity {
                 myParams.topMargin = 10;
 //                final ImageView t1 = new ImageView(context);
                 final GridLayout gridLayout = findViewById(R.id.gridLayout);
-                final EditText t2 = new EditText(context);
-                t2.setInputType(InputType.TYPE_CLASS_NUMBER);
-                int maxLength = 1;
-                InputFilter[] filterArray = new InputFilter[1];
-                filterArray[0] = new InputFilter.LengthFilter(maxLength);
-                t2.setFilters(filterArray);
-                t2.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                t2.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                        if (actionId == EditorInfo.IME_ACTION_DONE) {
-                            addButton.requestFocus();
-                            reOrderViews(gridLayout);
-                            hideKeyboard(context, t2);
-                            return true;
-                        }
-                        return false;
-                    }
-                });
-//                t2.setLayoutParams(myParams);
-//                t1.setBackgroundResource(R.drawable.checkbox_icon);
-//                t1.setLayoutParams(myParams);           /* applies layoutParams to view */
-//                gridLayout.addView(t1);
-                gridLayout.addView(t2);
-//                t2.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//
-//                    }
-//                });
-
-
-//                final ImageView imageView = new ImageView(context);
-//                imageViews.add(imageView);
-//                ImageView currentView = imageViews.get(imageViews.size() - 1);
-//                currentView.setLayoutParams(new ConstraintLayout.LayoutParams(300, (imageViews.size() * 300 + 300)));
-//                currentView.setImageResource(R.drawable.user_to_do);
-//                constraintLayout.addView(currentView);
-//                currentView.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        System.out.println("Clicked on imageView " + v);
-//                        EditText ed = new EditText(context);
-//                        ed.setInputType(InputType.TYPE_CLASS_TEXT);
-//                        ed.setLayoutParams(new ConstraintLayout.LayoutParams(600, (imageViews.size() * 300 + 300)));
-//                        System.out.println("Theoretically something was added.");
-//
-//                    }
-//                });
-//                System.out.println("Adding to-do, size of list = " + imageViews.size());
+                final EditText clockView = new EditText(context);
+                modifyEditText(context, gridLayout, addButton, clockView);
+//                final EditText t2 = new EditText(context);
+//                final ClockView clockView = new ClockView(context, null);
+//                final ClockView clockView = new ClockView(context, null);
+//                clockView.EditClockView(context, gridLayout, addButton);
+//                gridLayout.addView(clockView);
             }
         });
 //        final Button rmButton = findViewById(R.id.rmButton);
@@ -125,21 +82,64 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void reOrderViews(GridLayout gridLayout) {
-        View childView = new View(this);
-//        Array
+    /**
+     * The reOrderViews method rearranges the EditText views
+     * of the gridLayout in a clock-like manner.
+     */
+    public void reOrderViews(Context context, GridLayout gridLayout, ImageButton addButton) {
+        View childView;
+        ArrayList<Integer> clockList = new ArrayList<>();
         for (int i = 0; i < gridLayout.getChildCount(); i++) {
             childView = gridLayout.getChildAt(i);
             if (childView instanceof EditText) {
-//                childView.getId()
-                System.out.println(((EditText) childView).getText().toString());
+                String clockValue = ((EditText) childView).getText().toString();
+                if (!(clockValue.equals(""))) {
+                    /*
+                     * Check for user's empty set clock value.
+                     * Only non-empty values are inserted into the list.
+                     */
+                    clockList.add(Integer.parseInt(clockValue));
+                }
+                gridLayout.removeView(childView);   /* remove the processed child View */
+                i--;                                /* the index must be recalculated due to the removeView above */
             }
+        }
+        Collections.sort(clockList);
+        for (Integer clockValue: clockList) {
+            final EditText clockView = new EditText(context);
+            modifyEditText(context, gridLayout, addButton, clockView, clockValue);
         }
     }
 
     public static void hideKeyboard(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public void modifyEditText(final Context context, final GridLayout gridLayout, final ImageButton addButton, final EditText clockView) {
+        clockView.setId(View.generateViewId());
+        clockView.setInputType(InputType.TYPE_CLASS_NUMBER);
+        InputFilter[] filterArray = new InputFilter[1];
+        filterArray[0] = new InputFilter.LengthFilter(1);
+        clockView.setFilters(filterArray);
+        clockView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        clockView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    addButton.requestFocus();
+                    reOrderViews(context, gridLayout, addButton);
+                    hideKeyboard(context, clockView);
+                    return true;
+                }
+                return false;
+            }
+        });
+        gridLayout.addView(clockView);
+    }
+
+    public void modifyEditText(final Context context, final GridLayout gridLayout, final ImageButton addButton, final EditText clockView, Integer clockValue) {
+        modifyEditText(context, gridLayout, addButton, clockView);
+        clockView.setText(clockValue.toString());
     }
 
     static final class Resolution {
@@ -159,4 +159,6 @@ public class MainActivity extends AppCompatActivity {
             return height;
         }
     }
+
+
 }
