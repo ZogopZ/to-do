@@ -9,23 +9,30 @@
         android:theme="@style/Theme.AppCompat.Light"
         tools:context=".MainActivity">
 
-    <androidx.gridlayout.widget.GridLayout
-            android:id="@+id/gridLayout"
+    <ScrollView
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:orientation="vertical"
-            app:alignmentMode="alignBounds">
-        <ImageButton
-                android:id="@+id/addButton"
-                android:background="@drawable/add_todo_icon"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="5dp"
-                android:layout_marginStart="5dp">
-        </ImageButton>
-    </androidx.gridlayout.widget.GridLayout>
+            app:layout_constraintEnd_toStartOf="@+id/shutdownButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        <androidx.gridlayout.widget.GridLayout
+                android:id="@+id/gridLayout"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:orientation="vertical"
+                app:alignmentMode="alignBounds">
+            <ImageButton
+                    android:id="@+id/addButton"
+                    android:background="@drawable/add_todo_icon"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginStart="5dp">
+            </ImageButton>
+        </androidx.gridlayout.widget.GridLayout>
+    </ScrollView>
 
     <ImageButton
             android:id="@+id/shutdownButton"

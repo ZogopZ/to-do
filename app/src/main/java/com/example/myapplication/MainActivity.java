@@ -44,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
                 final GridLayout gridLayout = findViewById(R.id.gridLayout);
                 final EditText clockView = new EditText(context);
                 modifyEditText(context, gridLayout, addButton, clockView);
+                clockView.requestFocus();
+                showKeyboard(context, clockView);
 //                final EditText t2 = new EditText(context);
 //                final ClockView clockView = new ClockView(context, null);
 //                final ClockView clockView = new ClockView(context, null);
@@ -114,6 +116,11 @@ public class MainActivity extends AppCompatActivity {
     public static void hideKeyboard(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    public static void showKeyboard(Context context, View view) {
+        InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(view, 0);
     }
 
     public void modifyEditText(final Context context, final GridLayout gridLayout, final ImageButton addButton, final EditText clockView) {
