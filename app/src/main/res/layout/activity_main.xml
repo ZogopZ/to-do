@@ -22,7 +22,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:orientation="vertical"
-                app:alignmentMode="alignBounds">
+                app:alignmentMode="alignBounds"
+                android:descendantFocusability="beforeDescendants"
+                android:focusableInTouchMode="true">
             <ImageButton
                     android:id="@+id/addButton"
                     android:background="@drawable/add_todo_icon"
