@@ -1,6 +1,5 @@
 package com.example.myapplication;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
@@ -14,7 +13,10 @@ import android.view.*;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.gridlayout.widget.GridLayout;
 import java.util.*;
 
@@ -31,21 +33,23 @@ public class MainActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final LinearLayout clockInstanceLayout = new LinearLayout(context);
-                clockInstanceLayout.setOrientation(LinearLayout.HORIZONTAL);
+                final LinearLayout clockInstance = new LinearLayout(context);
+                clockInstance.setOrientation(LinearLayout.HORIZONTAL);
                 for (int i = 0; i < 5; i++) {
                     final EditText clockView = new EditText(context);
                     if (i == 2) {
-                        modifyEditText(context, clockInstanceLayout, addButton, clockView, ':');
+                        modifyEditText(context, clockInstance, addButton, clockView, ':');
                     }
                     else {
-                        modifyEditText(context, clockInstanceLayout, addButton, clockView);
+                        modifyEditText(context, clockInstance, addButton, clockView);
                     }
                 }
-                gridLayout.addView(clockInstanceLayout);
-                View clockView = clockInstanceLayout.getChildAt(0);
-                clockView.requestFocus();
-                showKeyboard(context, clockView);
+                ClockRemovalImageButton removeClockInstanceButton = new ClockRemovalImageButton(context, null);
+                removeClockInstanceButton.setProperties();
+                clockInstance.addView(removeClockInstanceButton);
+                gridLayout.addView(clockInstance);
+                addButton.requestFocus();
+                showKeyboard(context, addButton);
             }
         });
 
@@ -66,38 +70,41 @@ public class MainActivity extends AppCompatActivity {
      */
     public void reOrderViews(Context context, ImageButton addButton) {
         GridLayout gridLayout = findViewById(R.id.gridLayout);
-        View childView;
+        View clockInstance;
         ArrayList<String> clockList = new ArrayList<>();
         for (int i = 0; i < gridLayout.getChildCount(); i++) {
-            childView = gridLayout.getChildAt(i);
-            if (childView instanceof LinearLayout) {
-                int clockViews = ((LinearLayout) childView).getChildCount();
+            clockInstance = gridLayout.getChildAt(i);
+            if (clockInstance instanceof LinearLayout) {
+                int clockViews = ((LinearLayout) clockInstance).getChildCount();
                 StringBuilder clockValue = new StringBuilder();
                 for (int j = 0; j < clockViews; j++) {
-                    EditText clockView = (EditText) ((LinearLayout) childView).getChildAt(j);
-                    if (clockView.getText().toString().equals("")) {
-                        clockView.setText("0");
-                        clockValue.append("0");
-                    }
-                    else {
-                        clockValue.append(clockView.getText().toString());
+                    View clockView = ((LinearLayout) clockInstance).getChildAt(j);
+                    if (clockView instanceof EditText) {
+                        if (((EditText) clockView).getText().toString().equals("")) {
+                            ((EditText) clockView).setText("0");
+                            clockValue.append("0");
+                        }
+                        else {
+                            clockValue.append(((EditText) clockView).getText().toString());
+                        }
                     }
                 }
                 clockList.add(clockValue.toString());
             }
         }
         Collections.sort(clockList);
-        for (int i = 0; i < gridLayout.getChildCount(); i++) {
-            childView = gridLayout.getChildAt(i);
-            if (childView instanceof LinearLayout) {
-                String clockContent = clockList.get(i - 1);
-                int clockViews = ((LinearLayout) childView).getChildCount();
-                ((LinearLayout) childView).removeAllViews();
-                for (int j = 0; j < clockViews; j++) {
-                    EditText clockView = new EditText(context);
-                    modifyEditText(context, (LinearLayout) childView, addButton, clockView, clockContent.charAt(j));
-                }
+        for (int i = 0; i < clockList.size(); i++) {
+            clockInstance = gridLayout.getChildAt(i + 1);
+            int clockViews = ((LinearLayout) clockInstance).getChildCount() - 1;
+            ((LinearLayout) clockInstance).removeAllViews();
+            String clockContent = clockList.get(i);
+            for (int j = 0; j < clockViews; j++) {
+                EditText clockView = new EditText(context);
+                modifyEditText(context, (LinearLayout) clockInstance, addButton, clockView, clockContent.charAt(j));
             }
+            ClockRemovalImageButton removeClockInstanceButton = new ClockRemovalImageButton(context, null);
+            removeClockInstanceButton.setProperties();
+            ((LinearLayout) clockInstance).addView(removeClockInstanceButton);
         }
     }
 
@@ -243,12 +250,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public class ZoisView extends EditText {
+    public class ClockRemovalImageButton extends androidx.appcompat.widget.AppCompatImageButton {
 
-        public ZoisView(Context context, AttributeSet attrs) {
+        public ClockRemovalImageButton(@NonNull Context context, @Nullable AttributeSet attrs) {
             super(context, attrs);
+        }
+
+        /**
+         * setProperties() method sets the parameters of the remove button of each clock instance.
+         * It is used to remove its parent (LinearLayout) clock instance.
+         */
+        public void setProperties() {
+            this.setImageResource(R.drawable.remove_icon);
+            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(35, 35);
+            myP.topMargin = 40;
+            this.setLayoutParams(myP);
+            this.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    LinearLayout clockInstance = (LinearLayout) view.getParent();
+                    removeClockInstance(clockInstance);
+                }
+            });
         }
     }
 
+    public void removeClockInstance(LinearLayout clockInstance) {
+        GridLayout gridLayout = findViewById(R.id.gridLayout);
+        gridLayout.removeView(clockInstance);
+    }
 
 }
