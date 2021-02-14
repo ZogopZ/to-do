@@ -2,8 +2,10 @@ package com.example.myapplication;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -28,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         final Context context = getApplicationContext();
         final GridLayout gridLayout = findViewById(R.id.gridLayout);
-        final ImageButton addButton = findViewById(R.id.addButton);
 
+        final ImageButton addButton = findViewById(R.id.addButton);
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -53,12 +55,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         final ImageButton shutdownButton = findViewById(R.id.shutdownButton);
         shutdownButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finishAndRemoveTask();
+            }
+        });
+
+        final ImageButton settingsButton = findViewById(R.id.settingsButton);
+        settingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //todo: This will start a new settings activity.
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
             }
         });
 
