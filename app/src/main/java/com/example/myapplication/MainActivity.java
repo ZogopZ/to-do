@@ -269,7 +269,8 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     LinearLayout clockInstance = (LinearLayout) view.getParent();
-                    removeClockInstance(clockInstance);
+                    LinearLayout todoInstance = (LinearLayout) clockInstance.getParent();
+                    removeClockInstance(todoInstance);
                 }
             });
         }
