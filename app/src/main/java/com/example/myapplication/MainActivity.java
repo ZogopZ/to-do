@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -18,7 +17,6 @@ import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.gridlayout.widget.GridLayout;
 import java.util.*;
 
@@ -35,21 +33,30 @@ public class MainActivity extends AppCompatActivity {
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final LinearLayout todoInstance = new TodoInstance(context, null);
+                gridLayout.addView(todoInstance);
                 final LinearLayout clockInstance = new LinearLayout(context);
                 clockInstance.setOrientation(LinearLayout.HORIZONTAL);
-                for (int i = 0; i < 5; i++) {
+                for (int i = 0; i < 6; i++) {
                     final EditText clockView = new EditText(context);
                     if (i == 2) {
                         modifyEditText(context, clockInstance, addButton, clockView, ':');
+                    }
+                    else if (i == 5) {
+                        ClockRemovalImageButton removeClockInstanceButton = new ClockRemovalImageButton(context, null);
+                        removeClockInstanceButton.setProperties();
+                        clockInstance.addView(removeClockInstanceButton);
                     }
                     else {
                         modifyEditText(context, clockInstance, addButton, clockView);
                     }
                 }
-                ClockRemovalImageButton removeClockInstanceButton = new ClockRemovalImageButton(context, null);
-                removeClockInstanceButton.setProperties();
-                clockInstance.addView(removeClockInstanceButton);
-                gridLayout.addView(clockInstance);
+                todoInstance.addView(clockInstance);
+
+                EditText todoText = new EditText(context);
+                todoText.setInputType(InputType.TYPE_CLASS_TEXT);
+                todoInstance.addView(todoText);
+
                 addButton.requestFocus();
                 showKeyboard(context, addButton);
             }
@@ -81,41 +88,41 @@ public class MainActivity extends AppCompatActivity {
      */
     public void reOrderViews(Context context, ImageButton addButton) {
         GridLayout gridLayout = findViewById(R.id.gridLayout);
-        View clockInstance;
         ArrayList<String> clockList = new ArrayList<>();
-        for (int i = 0; i < gridLayout.getChildCount(); i++) {
-            clockInstance = gridLayout.getChildAt(i);
-            if (clockInstance instanceof LinearLayout) {
-                int clockViews = ((LinearLayout) clockInstance).getChildCount();
-                StringBuilder clockValue = new StringBuilder();
-                for (int j = 0; j < clockViews; j++) {
-                    View clockView = ((LinearLayout) clockInstance).getChildAt(j);
-                    if (clockView instanceof EditText) {
-                        if (((EditText) clockView).getText().toString().equals("")) {
-                            ((EditText) clockView).setText("0");
-                            clockValue.append("0");
-                        }
-                        else {
-                            clockValue.append(((EditText) clockView).getText().toString());
-                        }
-                    }
+        for (int i = 1; i < gridLayout.getChildCount(); i++) {
+            LinearLayout todoInstance = (LinearLayout) gridLayout.getChildAt(i);
+            LinearLayout clockInstance = (LinearLayout) todoInstance.getChildAt(0);
+            StringBuilder clockValue = new StringBuilder();
+            for (int j = 0; j < 5; j++) {
+                EditText clockView = (EditText) clockInstance.getChildAt(j);
+                if (clockView.getText().toString().equals("")) {
+                    clockView.setText("0");
+                    clockValue.append("0");
+                } else {
+                    clockValue.append(clockView.getText().toString());
                 }
-                clockList.add(clockValue.toString());
             }
+            clockValue.append(((EditText) todoInstance.getChildAt(1)).getText().toString());
+            clockList.add(clockValue.toString());
         }
+        System.out.println("TSVIS PRINT " + clockList);
         Collections.sort(clockList);
+        System.out.println(clockList);
         for (int i = 0; i < clockList.size(); i++) {
-            clockInstance = gridLayout.getChildAt(i + 1);
-            int clockViews = ((LinearLayout) clockInstance).getChildCount() - 1;
-            ((LinearLayout) clockInstance).removeAllViews();
+            LinearLayout todoInstance = (LinearLayout) gridLayout.getChildAt(i + 1);
+            LinearLayout clockInstance = (LinearLayout) todoInstance.getChildAt(0);
+            clockInstance.removeAllViews();
             String clockContent = clockList.get(i);
-            for (int j = 0; j < clockViews; j++) {
+            for (int j = 0; j < 5; j++) {
                 EditText clockView = new EditText(context);
-                modifyEditText(context, (LinearLayout) clockInstance, addButton, clockView, clockContent.charAt(j));
+                modifyEditText(context, clockInstance, addButton, clockView, clockContent.charAt(j));
             }
             ClockRemovalImageButton removeClockInstanceButton = new ClockRemovalImageButton(context, null);
             removeClockInstanceButton.setProperties();
-            ((LinearLayout) clockInstance).addView(removeClockInstanceButton);
+            clockInstance.addView(removeClockInstanceButton);
+
+            String todoText = clockContent.substring(5);
+            ((EditText) todoInstance.getChildAt(1)).setText(todoText);
         }
     }
 
@@ -243,24 +250,6 @@ public class MainActivity extends AppCompatActivity {
         clockInstanceLayout.addView(clockView);
     }
 
-    static final class Resolution {
-        private final int width;
-        private final int height;
-
-        public Resolution() {
-            this.width = Resources.getSystem().getDisplayMetrics().widthPixels;
-            this.height = Resources.getSystem().getDisplayMetrics().heightPixels;
-        }
-
-        public int getWidth() {
-            return width;
-        }
-
-        public int getHeight() {
-            return height;
-        }
-    }
-
     public class ClockRemovalImageButton extends androidx.appcompat.widget.AppCompatImageButton {
 
         public ClockRemovalImageButton(@NonNull Context context, @Nullable AttributeSet attrs) {
@@ -291,4 +280,43 @@ public class MainActivity extends AppCompatActivity {
         gridLayout.removeView(clockInstance);
     }
 
+    public static class TodoInstance extends LinearLayout {
+
+        public TodoInstance(Context context, @Nullable AttributeSet attrs) {
+            super(context, attrs);
+            this.setProperties();
+        }
+
+        public void setProperties() {
+            this.setOrientation(LinearLayout.HORIZONTAL);
+        }
+    }
+
+//    public static class TodoText extends androidx.appcompat.widget.AppCompatEditText {
+//
+//        public TodoText(Context context, AttributeSet attrs) {
+//            super(context, attrs);
+//            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(600, 200);
+//            this.setLayoutParams(myP);
+//        }
+//    }
+
 }
+
+//static final class Resolution {
+//    private final int width;
+//    private final int height;
+//
+//    public Resolution() {
+//        this.width = Resources.getSystem().getDisplayMetrics().widthPixels;
+//        this.height = Resources.getSystem().getDisplayMetrics().heightPixels;
+//    }
+//
+//    public int getWidth() {
+//        return width;
+//    }
+//
+//    public int getHeight() {
+//        return height;
+//    }
+//}
