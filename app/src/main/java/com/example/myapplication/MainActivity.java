@@ -55,6 +55,19 @@ public class MainActivity extends AppCompatActivity {
 
                 EditText todoText = new EditText(context);
                 todoText.setInputType(InputType.TYPE_CLASS_TEXT);
+                todoText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+                todoText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                        if (actionId == EditorInfo.IME_ACTION_DONE) {
+                            reOrderViews(context, addButton);
+                            addButton.requestFocus();
+                            hideKeyboard(context, addButton);
+                            return true;
+                        }
+                        return false;
+                    }
+                });
+
                 todoInstance.addView(todoText);
 
                 addButton.requestFocus();
@@ -151,18 +164,19 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                final LinearLayout parentLayout = ((LinearLayout) clockView.getParent());
-                int childCount = parentLayout.getChildCount();
+                final LinearLayout clockInstance = ((LinearLayout) clockView.getParent());
+                final LinearLayout todoInstance = ((LinearLayout) clockInstance.getParent());
+                int childCount = clockInstance.getChildCount();
                 for (int i = 0; i < childCount; i++) {
-                    if (parentLayout.getChildAt(i) == clockView) {
+                    if (clockInstance.getChildAt(i) == clockView) {
                         if (i == 4) {
-                            break;
+                            todoInstance.getChildAt(1).requestFocus();
                         }
                         else if (i == 1) {
-                            parentLayout.getChildAt(i + 2).requestFocus();
+                            clockInstance.getChildAt(i + 2).requestFocus();
                         }
                         else {
-                            parentLayout.getChildAt(i + 1).requestFocus();
+                            clockInstance.getChildAt(i + 1).requestFocus();
                         }
                     }
                 }
