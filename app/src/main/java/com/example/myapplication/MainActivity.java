@@ -67,11 +67,10 @@ public class MainActivity extends AppCompatActivity {
                         return false;
                     }
                 });
-
                 todoInstance.addView(todoText);
-
-                addButton.requestFocus();
-                showKeyboard(context, addButton);
+                EditText firstClockView = (EditText) clockInstance.getChildAt(0);
+                firstClockView.requestFocus();
+                showKeyboard(context, firstClockView);
             }
         });
 
