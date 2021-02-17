@@ -3,7 +3,6 @@ package com.example.myapplication;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -53,21 +52,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 todoInstance.addView(clockInstance);
 
-                EditText todoText = new EditText(context);
-                todoText.setInputType(InputType.TYPE_CLASS_TEXT);
-                todoText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                todoText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                        if (actionId == EditorInfo.IME_ACTION_DONE) {
-                            reOrderViews(context, addButton);
-                            addButton.requestFocus();
-                            hideKeyboard(context, addButton);
-                            return true;
-                        }
-                        return false;
-                    }
-                });
+                TodoText todoText = new TodoText(context);
                 todoInstance.addView(todoText);
+
                 EditText firstClockView = (EditText) clockInstance.getChildAt(0);
                 firstClockView.requestFocus();
                 showKeyboard(context, firstClockView);
@@ -303,17 +290,41 @@ public class MainActivity extends AppCompatActivity {
 
         public void setProperties() {
             this.setOrientation(LinearLayout.HORIZONTAL);
+            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, GridLayout.LayoutParams.WRAP_CONTENT);
+            this.setLayoutParams(myP);
         }
     }
 
-//    public static class TodoText extends androidx.appcompat.widget.AppCompatEditText {
-//
-//        public TodoText(Context context, AttributeSet attrs) {
-//            super(context, attrs);
-//            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(600, 200);
-//            this.setLayoutParams(myP);
-//        }
-//    }
+    public class TodoText extends androidx.appcompat.widget.AppCompatEditText {
+        private final TodoText todoText;
+
+        public TodoText(@NonNull Context context) {
+            super(context);
+            this.todoText = this;
+            todoText.setProperties();
+        }
+
+        private void setProperties() {
+            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            myP.leftMargin = 50;
+            todoText.setLayoutParams(myP);
+            todoText.setInputType(InputType.TYPE_CLASS_TEXT);
+            todoText.setMaxLines(1);
+            todoText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            todoText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        ImageButton addButton = findViewById(R.id.addButton);
+                        reOrderViews(getApplicationContext(), addButton);
+                        todoText.clearFocus();
+                        hideKeyboard(getApplicationContext(), todoText);
+                        return true;
+                    }
+                    return false;
+                }
+            });
+        }
+    }
 
 }
 
