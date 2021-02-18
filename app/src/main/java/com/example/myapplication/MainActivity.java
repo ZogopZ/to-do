@@ -36,21 +36,19 @@ public class MainActivity extends AppCompatActivity {
                 gridLayout.addView(todoInstance);
                 final LinearLayout clockInstance = new LinearLayout(context);
                 clockInstance.setOrientation(LinearLayout.HORIZONTAL);
-                for (int i = 0; i < 6; i++) {
+                for (int i = 0; i < 5; i++) {
                     final EditText clockView = new EditText(context);
                     if (i == 2) {
                         modifyEditText(context, clockInstance, addButton, clockView, ':');
-                    }
-                    else if (i == 5) {
-                        ClockRemovalImageButton removeClockInstanceButton = new ClockRemovalImageButton(context, null);
-                        removeClockInstanceButton.setProperties();
-                        clockInstance.addView(removeClockInstanceButton);
                     }
                     else {
                         modifyEditText(context, clockInstance, addButton, clockView);
                     }
                 }
                 todoInstance.addView(clockInstance);
+
+                TodoRemove todoRemove = new TodoRemove(context);
+                todoInstance.addView(todoRemove);
 
                 TodoText todoText = new TodoText(context);
                 todoInstance.addView(todoText);
@@ -101,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
                     clockValue.append(clockView.getText().toString());
                 }
             }
-            clockValue.append(((EditText) todoInstance.getChildAt(1)).getText().toString());
+            clockValue.append(((EditText) todoInstance.getChildAt(2)).getText().toString());
             clockList.add(clockValue.toString());
         }
         System.out.println("TSVIS PRINT " + clockList);
@@ -116,12 +114,11 @@ public class MainActivity extends AppCompatActivity {
                 EditText clockView = new EditText(context);
                 modifyEditText(context, clockInstance, addButton, clockView, clockContent.charAt(j));
             }
-            ClockRemovalImageButton removeClockInstanceButton = new ClockRemovalImageButton(context, null);
-            removeClockInstanceButton.setProperties();
-            clockInstance.addView(removeClockInstanceButton);
+            TodoRemove todoRemove = new TodoRemove(context);
+            todoInstance.addView(todoRemove);
 
             String todoText = clockContent.substring(5);
-            ((EditText) todoInstance.getChildAt(1)).setText(todoText);
+            ((EditText) todoInstance.getChildAt(2)).setText(todoText);
         }
     }
 
@@ -156,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < childCount; i++) {
                     if (clockInstance.getChildAt(i) == clockView) {
                         if (i == 4) {
-                            todoInstance.getChildAt(1).requestFocus();
+                            todoInstance.getChildAt(2).requestFocus();
                         }
                         else if (i == 1) {
                             clockInstance.getChildAt(i + 2).requestFocus();
@@ -250,35 +247,37 @@ public class MainActivity extends AppCompatActivity {
         clockInstanceLayout.addView(clockView);
     }
 
-    public class ClockRemovalImageButton extends androidx.appcompat.widget.AppCompatImageButton {
+    public class TodoRemove extends androidx.appcompat.widget.AppCompatImageButton {
+        private final TodoRemove todoRemove;
 
-        public ClockRemovalImageButton(@NonNull Context context, @Nullable AttributeSet attrs) {
-            super(context, attrs);
+        public TodoRemove(Context context) {
+            super(context);
+            this.todoRemove = this;
+            todoRemove.setProperties();
         }
 
         /**
-         * setProperties() method sets the parameters of the remove button of each clock instance.
-         * It is used to remove its parent (LinearLayout) clock instance.
+         * setProperties() method sets the parameters of the remove button of each to-do instance.
+         * onClick it removes its parent (LinearLayout to-do instance).
          */
         public void setProperties() {
-            this.setImageResource(R.drawable.remove_icon);
+            todoRemove.setImageResource(R.drawable.remove_icon);
             LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(35, 35);
             myP.topMargin = 40;
-            this.setLayoutParams(myP);
-            this.setOnClickListener(new OnClickListener() {
+            todoRemove.setLayoutParams(myP);
+            todoRemove.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    LinearLayout clockInstance = (LinearLayout) view.getParent();
-                    LinearLayout todoInstance = (LinearLayout) clockInstance.getParent();
-                    removeClockInstance(todoInstance);
+                    LinearLayout todoInstance = (LinearLayout) view.getParent();
+                    removeTodoInstance(todoInstance);
                 }
             });
         }
     }
 
-    public void removeClockInstance(LinearLayout clockInstance) {
+    public void removeTodoInstance(LinearLayout todoInstance) {
         GridLayout gridLayout = findViewById(R.id.gridLayout);
-        gridLayout.removeView(clockInstance);
+        gridLayout.removeView(todoInstance);
     }
 
     public static class TodoInstance extends LinearLayout {
@@ -325,7 +324,6 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
-
 }
 
 //static final class Resolution {
