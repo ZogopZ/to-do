@@ -174,8 +174,8 @@ public class MainActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
                     reOrderViews(context, addButton);
-                    addButton.requestFocus();
-                    hideKeyboard(context, addButton);
+                    clockView.clearFocus();
+                    hideKeyboard(context, clockView);
                     return true;
                 }
                 return false;
@@ -236,8 +236,8 @@ public class MainActivity extends AppCompatActivity {
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
                         reOrderViews(context, addButton);
-                        addButton.requestFocus();
-                        hideKeyboard(context, addButton);
+                        clockView.clearFocus();
+                        hideKeyboard(context, clockView);
                         return true;
                     }
                     return false;
