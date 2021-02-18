@@ -307,12 +307,14 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             myP.leftMargin = 50;
             todoText.setLayoutParams(myP);
-            todoText.setInputType(InputType.TYPE_CLASS_TEXT);
+            todoText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
             todoText.setMaxLines(1);
             todoText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            todoText.setFocusableInTouchMode(true);
             todoText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        todoText.setAlpha(0.5f);
                         ImageButton addButton = findViewById(R.id.addButton);
                         reOrderViews(getApplicationContext(), addButton);
                         todoText.clearFocus();
