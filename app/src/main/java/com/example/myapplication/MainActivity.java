@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
      * The reOrderViews method rearranges the EditText views            //todo: Change this comment.
      * of the gridLayout in a clock-like manner.
      */
-    public void reOrderViews(Context context, ImageButton addButton) {
+    public void reOrderViews(Context context) {
         GridLayout gridLayout = findViewById(R.id.gridLayout);
         ArrayList<String> clockList = new ArrayList<>();
         for (int i = 1; i < gridLayout.getChildCount(); i++) {
@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
             LinearLayout clockInstance = (LinearLayout) todoInstance.getChildAt(0);
             StringBuilder clockValue = new StringBuilder();
             for (int j = 0; j < 5; j++) {
-                EditText clockView = (EditText) clockInstance.getChildAt(j);
+                ClockInstance.ClockView clockView = (ClockInstance.ClockView) clockInstance.getChildAt(j);
                 if (clockView.getText().toString().equals("")) {
                     clockView.setText("0");
                     clockValue.append("0");
@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
         clockView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    reOrderViews(context, addButton);
+                    reOrderViews(context);
                     clockView.clearFocus();
                     hideKeyboard(context, clockView);
                     return true;
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
             clockView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        reOrderViews(context, addButton);
+                        reOrderViews(context);
                         clockView.clearFocus();
                         hideKeyboard(context, clockView);
                         return true;
@@ -388,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
                 clockView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                         if (actionId == EditorInfo.IME_ACTION_DONE) {
-//                            reOrderViews(context, addButton);
+                            reOrderViews(getApplicationContext());
                             clockView.clearFocus();
                             hideKeyboard(getApplicationContext(), clockView);
                             return true;
@@ -433,8 +433,7 @@ public class MainActivity extends AppCompatActivity {
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
                         todoText.setAlpha(0.5f);
-                        ImageButton addButton = findViewById(R.id.addButton);
-                        reOrderViews(getApplicationContext(), addButton);
+                        reOrderViews(getApplicationContext());
                         todoText.clearFocus();
                         hideKeyboard(getApplicationContext(), todoText);
                         return true;
