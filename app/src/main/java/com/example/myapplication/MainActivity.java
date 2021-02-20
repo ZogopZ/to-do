@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final LinearLayout todoInstance = new TodoInstance(context, null);
                 gridLayout.addView(todoInstance);
+
                 final ClockInstance clockInstance = new ClockInstance(context);
                 todoInstance.addView(clockInstance);
 
@@ -387,62 +388,56 @@ public class MainActivity extends AppCompatActivity {
                 });
                 clockView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                        if (actionId == EditorInfo.IME_ACTION_DONE) {
-                            reOrderViews(getApplicationContext());
-                            clockView.clearFocus();
-                            hideKeyboard(getApplicationContext(), clockView);
-                            return true;
-                        }
-                        return false;
+                        return actionId == EditorInfo.IME_ACTION_DONE;
                     }
-                });
-            }
-
-            public void setProperties(Character colon) {
-                clockView.setId(View.generateViewId());
-                InputFilter[] filterArray = new InputFilter[1];
-                filterArray[0] = new InputFilter.LengthFilter(1);
-                clockView.setFilters(filterArray);
-                clockView.setText(colon.toString());
-                clockView.setEnabled(false);
-                LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(10, 50);
-                clockView.setLayoutParams(myP);
-                clockView.setBackgroundResource(android.R.color.transparent);
-            }
-        }
-    }
-
-    public class TodoText extends androidx.appcompat.widget.AppCompatEditText {
-        private final TodoText todoText;
-
-        public TodoText(@NonNull Context context) {
-            super(context);
-            this.todoText = this;
-            todoText.setProperties();
-        }
-
-        private void setProperties() {
-            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            myP.leftMargin = 50;
-            todoText.setLayoutParams(myP);
-            todoText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-            todoText.setMaxLines(1);
-            todoText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-            todoText.setFocusableInTouchMode(true);
-            todoText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        todoText.setAlpha(0.5f);
-                        reOrderViews(getApplicationContext());
-                        todoText.clearFocus();
-                        hideKeyboard(getApplicationContext(), todoText);
-                        return true;
-                    }
-                    return false;
-                }
             });
         }
+
+        public void setProperties(Character colon) {
+            clockView.setId(View.generateViewId());
+            InputFilter[] filterArray = new InputFilter[1];
+            filterArray[0] = new InputFilter.LengthFilter(1);
+            clockView.setFilters(filterArray);
+            clockView.setText(colon.toString());
+            clockView.setEnabled(false);
+            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(10, 50);
+            clockView.setLayoutParams(myP);
+            clockView.setBackgroundResource(android.R.color.transparent);
+        }
     }
+}
+
+public class TodoText extends androidx.appcompat.widget.AppCompatEditText {
+    private final TodoText todoText;
+
+    public TodoText(@NonNull Context context) {
+        super(context);
+        this.todoText = this;
+        todoText.setProperties();
+    }
+
+    private void setProperties() {
+        LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+        myP.leftMargin = 50;
+        todoText.setLayoutParams(myP);
+        todoText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        todoText.setMaxLines(1);
+        todoText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        todoText.setFocusableInTouchMode(true);
+        todoText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    todoText.setAlpha(0.5f);
+                    reOrderViews(getApplicationContext());
+                    todoText.clearFocus();
+                    hideKeyboard(getApplicationContext(), todoText);
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+}
 }
 
 //static final class Resolution {
