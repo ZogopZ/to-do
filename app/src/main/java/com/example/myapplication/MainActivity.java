@@ -110,8 +110,14 @@ public class MainActivity extends AppCompatActivity {
             TodoRemove todoRemove = new TodoRemove(context);
             todoInstance.addView(todoRemove);
 
-            String todoText = clockContent.substring(5);
-            ((EditText) todoInstance.getChildAt(2)).setText(todoText);
+            String todoTextValue = clockContent.substring(5);
+            TodoText todoText = (TodoText) todoInstance.getChildAt(2);
+            if ((todoTextValue.equals("")) || (todoTextValue.equals("to-do"))) {
+                todoText.setText("to-do");
+            }
+            else {
+                todoText.setText(todoTextValue);
+            }
         }
     }
 
@@ -427,7 +433,6 @@ public class TodoText extends androidx.appcompat.widget.AppCompatEditText {
         todoText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                 if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    todoText.setAlpha(0.5f);
                     reOrderViews(getApplicationContext());
                     todoText.clearFocus();
                     hideKeyboard(getApplicationContext(), todoText);
