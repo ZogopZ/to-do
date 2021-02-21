@@ -3,7 +3,6 @@ package com.example.myapplication;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -74,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
      * The reOrderViews method rearranges the EditText views            //todo: Change this comment.
      * of the gridLayout in a clock-like manner.
      */
-    public void reOrderViews(Context context) {
+    public void reOrderViews() {
         GridLayout gridLayout = findViewById(R.id.gridLayout);
         ArrayList<String> clockList = new ArrayList<>();
         for (int i = 1; i < gridLayout.getChildCount(); i++) {
@@ -93,9 +92,7 @@ public class MainActivity extends AppCompatActivity {
             clockValue.append(((EditText) todoInstance.getChildAt(2)).getText().toString());
             clockList.add(clockValue.toString());
         }
-        System.out.println("TSVIS PRINT " + clockList);
         Collections.sort(clockList);
-        System.out.println(clockList);
         for (int i = 0; i < clockList.size(); i++) {
             LinearLayout todoInstance = (LinearLayout) gridLayout.getChildAt(i + 1);
             LinearLayout clockInstance = (LinearLayout) todoInstance.getChildAt(0);
@@ -127,121 +124,6 @@ public class MainActivity extends AppCompatActivity {
         imm.showSoftInput(view, 0);
     }
 
-    public void modifyEditText(final Context context, final LinearLayout clockInstanceLayout, final ImageButton addButton, final EditText clockView) {
-        clockView.setId(View.generateViewId());
-        clockView.setInputType(InputType.TYPE_CLASS_NUMBER);
-        InputFilter[] filterArray = new InputFilter[1];
-        filterArray[0] = new InputFilter.LengthFilter(1);
-        clockView.setFilters(filterArray);
-        clockView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        clockView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                final LinearLayout clockInstance = ((LinearLayout) clockView.getParent());
-                final LinearLayout todoInstance = ((LinearLayout) clockInstance.getParent());
-                int childCount = clockInstance.getChildCount();
-                for (int i = 0; i < childCount; i++) {
-                    if (clockInstance.getChildAt(i) == clockView) {
-                        if (i == 4) {
-                            todoInstance.getChildAt(2).requestFocus();
-                        }
-                        else if (i == 1) {
-                            clockInstance.getChildAt(i + 2).requestFocus();
-                        }
-                        else {
-                            clockInstance.getChildAt(i + 1).requestFocus();
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-            }
-        });
-        clockView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    reOrderViews(context);
-                    clockView.clearFocus();
-                    hideKeyboard(context, clockView);
-                    return true;
-                }
-                return false;
-            }
-        });
-        clockInstanceLayout.addView(clockView);
-    }
-
-    public void modifyEditText(final Context context, final LinearLayout clockInstanceLayout, final ImageButton addButton, final EditText clockView, final Character clockContent) {
-        if (clockContent.equals(':')) {
-            clockView.setId(View.generateViewId());
-            InputFilter[] filterArray = new InputFilter[1];
-            filterArray[0] = new InputFilter.LengthFilter(1);
-            clockView.setFilters(filterArray);
-            clockView.setText(clockContent.toString());
-            clockView.setEnabled(false);
-            clockView.setBackgroundResource(android.R.color.transparent);
-        }
-        else {
-            clockView.setId(View.generateViewId());
-            clockView.setInputType(InputType.TYPE_CLASS_NUMBER);
-            InputFilter[] filterArray = new InputFilter[1];
-            filterArray[0] = new InputFilter.LengthFilter(1);
-            clockView.setFilters(filterArray);
-            clockView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-            clockView.setText(clockContent.toString());
-            clockView.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-                }
-
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    if (count != 0) {
-                        final LinearLayout parentLayout = ((LinearLayout) clockView.getParent());
-                        int childCount = parentLayout.getChildCount();
-                        for (int i = 0; i < childCount; i++) {
-                            if (parentLayout.getChildAt(i) == clockView) {
-                                if (i == 4) {
-                                    break;
-                                } else if (i == 1) {
-                                    parentLayout.getChildAt(i + 2).requestFocus();
-                                } else {
-                                    parentLayout.getChildAt(i + 1).requestFocus();
-                                }
-                            }
-                        }
-                    }
-                }
-
-                @Override
-                public void afterTextChanged(Editable s) {
-
-                }
-            });
-            clockView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-                        reOrderViews(context);
-                        clockView.clearFocus();
-                        hideKeyboard(context, clockView);
-                        return true;
-                    }
-                    return false;
-                }
-            });
-        }
-        clockInstanceLayout.addView(clockView);
-    }
-
     public class TodoRemove extends androidx.appcompat.widget.AppCompatImageButton {
         private final TodoRemove todoRemove;
 
@@ -258,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
         public void setProperties() {
             todoRemove.setImageResource(R.drawable.remove_icon);
             LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(35, 35);
-//            myP.topMargin = 40;
             todoRemove.setLayoutParams(myP);
             todoRemove.setOnClickListener(new OnClickListener() {
                 @Override
@@ -393,69 +274,51 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                         return actionId == EditorInfo.IME_ACTION_DONE;
                     }
+                });
+            }
+
+            public void setProperties(Character colon) {
+                clockView.setId(View.generateViewId());
+                InputFilter[] filterArray = new InputFilter[1];
+                filterArray[0] = new InputFilter.LengthFilter(1);
+                clockView.setFilters(filterArray);
+                clockView.setText(colon.toString());
+                clockView.setEnabled(false);
+                LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(10, 50);
+                clockView.setLayoutParams(myP);
+                clockView.setBackgroundResource(android.R.color.transparent);
+            }
+        }
+    }
+
+    public class TodoText extends androidx.appcompat.widget.AppCompatEditText {
+        private final TodoText todoText;
+
+        public TodoText(@NonNull Context context) {
+            super(context);
+            this.todoText = this;
+            todoText.setProperties();
+        }
+
+        private void setProperties() {
+            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            myP.leftMargin = 50;
+            todoText.setLayoutParams(myP);
+            todoText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+            todoText.setMaxLines(1);
+            todoText.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            todoText.setFocusableInTouchMode(true);
+            todoText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        reOrderViews();
+                        todoText.clearFocus();
+                        hideKeyboard(getApplicationContext(), todoText);
+                        return true;
+                    }
+                    return false;
+                }
             });
         }
-
-        public void setProperties(Character colon) {
-            clockView.setId(View.generateViewId());
-            InputFilter[] filterArray = new InputFilter[1];
-            filterArray[0] = new InputFilter.LengthFilter(1);
-            clockView.setFilters(filterArray);
-            clockView.setText(colon.toString());
-            clockView.setEnabled(false);
-            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(10, 50);
-            clockView.setLayoutParams(myP);
-            clockView.setBackgroundResource(android.R.color.transparent);
-        }
     }
 }
-
-public class TodoText extends androidx.appcompat.widget.AppCompatEditText {
-    private final TodoText todoText;
-
-    public TodoText(@NonNull Context context) {
-        super(context);
-        this.todoText = this;
-        todoText.setProperties();
-    }
-
-    private void setProperties() {
-        LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        myP.leftMargin = 50;
-        todoText.setLayoutParams(myP);
-        todoText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-        todoText.setMaxLines(1);
-        todoText.setImeOptions(EditorInfo.IME_ACTION_DONE);
-        todoText.setFocusableInTouchMode(true);
-        todoText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    reOrderViews(getApplicationContext());
-                    todoText.clearFocus();
-                    hideKeyboard(getApplicationContext(), todoText);
-                    return true;
-                }
-                return false;
-            }
-        });
-    }
-}
-}
-
-//static final class Resolution {
-//    private final int width;
-//    private final int height;
-//
-//    public Resolution() {
-//        this.width = Resources.getSystem().getDisplayMetrics().widthPixels;
-//        this.height = Resources.getSystem().getDisplayMetrics().heightPixels;
-//    }
-//
-//    public int getWidth() {
-//        return width;
-//    }
-//
-//    public int getHeight() {
-//        return height;
-//    }
-//}
