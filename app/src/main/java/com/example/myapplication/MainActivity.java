@@ -70,47 +70,22 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * The reOrderViews method rearranges the EditText views            //todo: Change this comment.
-     * of the gridLayout in a clock-like manner.
+     * The reOrderViews method rearranges the to-do instances of
+     * the gridLayout according to time ascending. The actual
+     * reordering occurs when the user presses IME_ACTION_DONE in
+     * a to-do's instance text view referenced here are todoText.
      */
     public void reOrderViews() {
         GridLayout gridLayout = findViewById(R.id.gridLayout);
-        ArrayList<String> clockList = new ArrayList<>();
+        ArrayList<TodoInstance> indexing = new ArrayList<>();
         for (int i = 1; i < gridLayout.getChildCount(); i++) {
-            LinearLayout todoInstance = (LinearLayout) gridLayout.getChildAt(i);
-            LinearLayout clockInstance = (LinearLayout) todoInstance.getChildAt(0);
-            StringBuilder clockValue = new StringBuilder();
-            for (int j = 0; j < 5; j++) {
-                ClockInstance.ClockView clockView = (ClockInstance.ClockView) clockInstance.getChildAt(j);
-                if (clockView.getText().toString().equals("")) {
-                    clockView.setText("0");
-                    clockValue.append("0");
-                } else {
-                    clockValue.append(clockView.getText().toString());
-                }
-            }
-            clockValue.append(((EditText) todoInstance.getChildAt(2)).getText().toString());
-            clockList.add(clockValue.toString());
+            TodoInstance todoInstance = (TodoInstance) gridLayout.getChildAt(i);
+            indexing.add(todoInstance);
         }
-        Collections.sort(clockList);
-        for (int i = 0; i < clockList.size(); i++) {
-            LinearLayout todoInstance = (LinearLayout) gridLayout.getChildAt(i + 1);
-            LinearLayout clockInstance = (LinearLayout) todoInstance.getChildAt(0);
-
-            String clockContent = clockList.get(i);
-            for (int j = 0; j < 5; j++) {
-                char clockValue = clockContent.charAt(j);
-                ClockInstance.ClockView clockView = (ClockInstance.ClockView) clockInstance.getChildAt(j);
-                clockView.setText(Character.toString(clockValue));
-            }
-            String todoTextValue = clockContent.substring(5);
-            TodoText todoText = (TodoText) todoInstance.getChildAt(2);
-            if ((todoTextValue.equals("")) || (todoTextValue.equals("to-do"))) {
-                todoText.setText("to-do");
-            }
-            else {
-                todoText.setText(todoTextValue);
-            }
+        Collections.sort(indexing);                     // Sort the to-do instances time ascending.
+        for (TodoInstance todoInstance : indexing) {
+            gridLayout.removeView(todoInstance);        // Remove unsorted to-do instances from layout.
+            gridLayout.addView(todoInstance);           // Apply sorted to-do instances to layout.
         }
     }
 
@@ -156,18 +131,47 @@ public class MainActivity extends AppCompatActivity {
         gridLayout.removeView(todoInstance);
     }
 
-    public static class TodoInstance extends LinearLayout {
+    public class TodoInstance extends LinearLayout implements Comparable<TodoInstance> {
+        private final TodoInstance todoInstance;
 
         public TodoInstance(Context context, @Nullable AttributeSet attrs) {
             super(context, attrs);
-            this.setProperties();
+            this.todoInstance = this;
+            todoInstance.setProperties();
         }
 
         public void setProperties() {
-            this.setOrientation(LinearLayout.HORIZONTAL);
-            this.setGravity(Gravity.CENTER);
+            todoInstance.setOrientation(LinearLayout.HORIZONTAL);
+            todoInstance.setGravity(Gravity.CENTER);
             LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, GridLayout.LayoutParams.WRAP_CONTENT);
-            this.setLayoutParams(myP);
+            todoInstance.setLayoutParams(myP);
+        }
+
+        @Override
+        public int compareTo(TodoInstance todoRename) {
+            ClockInstance clockInstance1 = (ClockInstance) todoRename.getChildAt(0);
+            StringBuilder clock1 = new StringBuilder();
+            ClockInstance.ClockView clockView1;
+            for (int i = 0; i < 5; i++) {
+                if (i != 2) {
+                    clockView1 = (ClockInstance.ClockView) clockInstance1.getChildAt(i);
+                    clock1.append(Objects.requireNonNull(clockView1.getText()).toString());
+                }
+            }
+            int comparator1 = Integer.parseInt(clock1.toString());
+
+            ClockInstance clockInstance2 = (ClockInstance) todoInstance.getChildAt(0);
+            StringBuilder clock2 = new StringBuilder();
+            ClockInstance.ClockView clockView2;
+            for (int i = 0; i < 5; i++) {
+                if (i != 2) {
+                    clockView2 = (ClockInstance.ClockView) clockInstance2.getChildAt(i);
+                    clock2.append(Objects.requireNonNull(clockView2.getText()).toString());
+                }
+            }
+            int comparator2 = Integer.parseInt(clock2.toString());
+            System.out.println("@@@@ " + comparator2 + " @@@ " + comparator1);
+            return comparator2 - comparator1;
         }
     }
 
