@@ -106,10 +106,6 @@ public class MainActivity extends AppCompatActivity {
                 ClockInstance.ClockView clockView = (ClockInstance.ClockView) clockInstance.getChildAt(j);
                 clockView.setText(Character.toString(clockValue));
             }
-
-            TodoRemove todoRemove = new TodoRemove(context);
-            todoInstance.addView(todoRemove);
-
             String todoTextValue = clockContent.substring(5);
             TodoText todoText = (TodoText) todoInstance.getChildAt(2);
             if ((todoTextValue.equals("")) || (todoTextValue.equals("to-do"))) {
@@ -262,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
         public void setProperties() {
             todoRemove.setImageResource(R.drawable.remove_icon);
             LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(35, 35);
-            myP.topMargin = 40;
+//            myP.topMargin = 40;
             todoRemove.setLayoutParams(myP);
             todoRemove.setOnClickListener(new OnClickListener() {
                 @Override
@@ -288,6 +284,7 @@ public class MainActivity extends AppCompatActivity {
 
         public void setProperties() {
             this.setOrientation(LinearLayout.HORIZONTAL);
+            this.setGravity(Gravity.CENTER);
             LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, GridLayout.LayoutParams.WRAP_CONTENT);
             this.setLayoutParams(myP);
         }
