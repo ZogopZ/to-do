@@ -306,6 +306,11 @@ public class MainActivity extends AppCompatActivity {
             todoText.setProperties();
         }
 
+        /**
+         * setProperties() method sets the parameters of the text view
+         * of the to-do instance. On IME_ACTION_DONE the application
+         * reorders the to-do instances according to time ascending.
+         */
         private void setProperties() {
             todoText.setGravity(Gravity.CENTER_HORIZONTAL);
             LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -315,6 +320,7 @@ public class MainActivity extends AppCompatActivity {
             todoText.setMaxLines(1);
             todoText.setImeOptions(EditorInfo.IME_ACTION_DONE);
             todoText.setFocusableInTouchMode(true);
+            todoText.setHint("to-do");
             todoText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
