@@ -38,11 +38,11 @@ public class MainActivity extends AppCompatActivity {
                 final ClockInstance clockInstance = new ClockInstance(context);
                 todoInstance.addView(clockInstance);
 
-                TodoRemove todoRemove = new TodoRemove(context);
-                todoInstance.addView(todoRemove);
-
                 TodoText todoText = new TodoText(context);
                 todoInstance.addView(todoText);
+
+                TodoRemove todoRemove = new TodoRemove(context);
+                todoInstance.addView(todoRemove);
 
                 clockInstance.getChildAt(0).requestFocus();
                 showKeyboard(context, clockInstance.getChildAt(0));
@@ -70,10 +70,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * The reOrderViews method rearranges the to-do instances of
-     * the gridLayout according to time ascending. The actual
-     * reordering occurs when the user presses IME_ACTION_DONE in
-     * a to-do's instance text view referenced here are todoText.
+     * The reOrderViews method rearranges the to-do instances of the
+     * gridLayout according to time ascending. The actual reordering
+     * occurs when the user presses IME_ACTION_DONE in a to-do's
+     * instance text view referenced here are todoText.
      */
     public void reOrderViews() {
         GridLayout gridLayout = findViewById(R.id.gridLayout);
@@ -109,12 +109,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
         /**
-         * setProperties() method sets the parameters of the remove button of each to-do instance.
+         * setProperties() method sets the parameters of the remove
+         * button of each to-do instance.
          * onClick it removes its parent (LinearLayout to-do instance).
          */
         public void setProperties() {
             todoRemove.setImageResource(R.drawable.remove_icon);
-            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(35, 35);
+            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(25, 25);
+            myP.leftMargin = 20;
             todoRemove.setLayoutParams(myP);
             todoRemove.setOnClickListener(new OnClickListener() {
                 @Override
@@ -142,7 +144,6 @@ public class MainActivity extends AppCompatActivity {
 
         public void setProperties() {
             todoInstance.setOrientation(LinearLayout.HORIZONTAL);
-            todoInstance.setGravity(Gravity.CENTER);
             LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, GridLayout.LayoutParams.WRAP_CONTENT);
             todoInstance.setLayoutParams(myP);
         }
@@ -193,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void setProperties() {
+            clockInstance.setGravity(Gravity.CENTER_HORIZONTAL);
             clockInstance.setOrientation(LinearLayout.HORIZONTAL);
         }
 
@@ -257,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < childCount; i++) {
                             if (clockInstance.getChildAt(i) == clockView) {
                                 if (i == 4) {
-                                    todoInstance.getChildAt(2).requestFocus();
+                                    todoInstance.getChildAt(1).requestFocus();
                                 }
                                 else if (i == 1) {
                                     clockInstance.getChildAt(i + 2).requestFocus();
@@ -305,7 +307,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         private void setProperties() {
-            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            todoText.setGravity(Gravity.CENTER_HORIZONTAL);
+            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
             myP.leftMargin = 50;
             todoText.setLayoutParams(myP);
             todoText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
