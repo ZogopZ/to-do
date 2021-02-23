@@ -34,18 +34,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final LinearLayout todoInstance = new TodoInstance(context, null);
                 gridLayout.addView(todoInstance);
-
-                final ClockInstance clockInstance = new ClockInstance(context);
-                todoInstance.addView(clockInstance);
-
-                TodoText todoText = new TodoText(context);
-                todoInstance.addView(todoText);
-
-                TodoRemove todoRemove = new TodoRemove(context);
-                todoInstance.addView(todoRemove);
-
-                clockInstance.getChildAt(0).requestFocus();
-                showKeyboard(context, clockInstance.getChildAt(0));
             }
         });
 
@@ -140,12 +128,24 @@ public class MainActivity extends AppCompatActivity {
             super(context, attrs);
             this.todoInstance = this;
             todoInstance.setProperties();
+            todoInstance.setChildren();
         }
 
         public void setProperties() {
             todoInstance.setOrientation(LinearLayout.HORIZONTAL);
             LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, GridLayout.LayoutParams.WRAP_CONTENT);
             todoInstance.setLayoutParams(myP);
+        }
+
+        public void setChildren() {
+            ClockInstance clockInstance = new ClockInstance(getApplicationContext());
+            todoInstance.addView(clockInstance);
+            TodoText todoText = new TodoText(getApplicationContext());
+            todoInstance.addView(todoText);
+            TodoRemove todoRemove = new TodoRemove(getApplicationContext());
+            todoInstance.addView(todoRemove);
+            clockInstance.getChildAt(0).requestFocus();
+            showKeyboard(getApplicationContext(), clockInstance.getChildAt(0));
         }
 
         @Override
