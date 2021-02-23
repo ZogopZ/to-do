@@ -34,6 +34,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final LinearLayout todoInstance = new TodoInstance(context, null);
                 gridLayout.addView(todoInstance);
+                ClockInstance clockInstance = (ClockInstance) todoInstance.getChildAt(0);
+                ClockInstance.ClockView clockView = (ClockInstance.ClockView) clockInstance.getChildAt(0);
+                clockView.requestFocus();
+                showKeyboard(context, clockView);
             }
         });
 
@@ -148,8 +152,6 @@ public class MainActivity extends AppCompatActivity {
             TodoRemove todoRemove = new TodoRemove(getApplicationContext());
             todoInstance.addView(todoRemove);
             todoInstance.setChildrenIndexes();
-            clockInstance.getChildAt(0).requestFocus();
-            showKeyboard(getApplicationContext(), clockInstance.getChildAt(0));
         }
 
         public void setChildrenIndexes() {
