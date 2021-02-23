@@ -123,6 +123,9 @@ public class MainActivity extends AppCompatActivity {
 
     public class TodoInstance extends LinearLayout implements Comparable<TodoInstance> {
         private final TodoInstance todoInstance;
+        private int clockViewIndex;
+        private int textViewIndex;
+        private int removeViewIndex;
 
         public TodoInstance(Context context, @Nullable AttributeSet attrs) {
             super(context, attrs);
@@ -144,8 +147,25 @@ public class MainActivity extends AppCompatActivity {
             todoInstance.addView(todoText);
             TodoRemove todoRemove = new TodoRemove(getApplicationContext());
             todoInstance.addView(todoRemove);
+            todoInstance.setChildrenIndexes();
             clockInstance.getChildAt(0).requestFocus();
             showKeyboard(getApplicationContext(), clockInstance.getChildAt(0));
+        }
+
+        public void setChildrenIndexes() {
+            View childView;
+            for (int i = 0; i < todoInstance.getChildCount(); i++) {
+                childView = todoInstance.getChildAt(i);
+                if (childView instanceof ClockInstance) {
+                    clockViewIndex = i;
+                }
+                else if (childView instanceof TodoText) {
+                    textViewIndex = i;
+                }
+                else if (childView instanceof TodoRemove) {
+                    removeViewIndex = i;
+                }
+            }
         }
 
         @Override
@@ -178,12 +198,18 @@ public class MainActivity extends AppCompatActivity {
 
     public class ClockInstance extends LinearLayout {
         private final ClockInstance clockInstance;
+        private int clockViewOne;
+        private int clockViewTwo;
+        private int clockViewColon;
+        private int clockViewThree;
+        private int clockViewFour;
 
         public ClockInstance(Context context) {
             super(context);
             this.clockInstance = this;
             clockInstance.setProperties();
             clockInstance.setChildren();
+            clockInstance.setChildrenIndexes();
         }
 
         public ClockInstance(Context context, String clockContent) {
@@ -200,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
 
         public void setChildren() {
             for (int i = 0; i < 5; i++) {
-                ClockView clockView = new ClockView(getContext().getApplicationContext());
+                ClockView clockView = new ClockView(getApplicationContext());
                 if (!(i == 2)) {
                     clockView.setProperties();
                 }
@@ -224,6 +250,14 @@ public class MainActivity extends AppCompatActivity {
                 }
                 clockInstance.addView(clockView);
             }
+        }
+
+        public void setChildrenIndexes() {
+            clockViewOne = 0;
+            clockViewTwo = 1;
+            clockViewThree = 3;
+            clockViewFour = 4;
+            clockViewColon = 2;
         }
 
         public class ClockView extends androidx.appcompat.widget.AppCompatEditText{
