@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void setProperties() {
-            clockInstance.setGravity(Gravity.CENTER_HORIZONTAL);
+            clockInstance.setGravity(Gravity.CENTER);
             clockInstance.setOrientation(LinearLayout.HORIZONTAL);
         }
 
@@ -258,9 +258,10 @@ public class MainActivity extends AppCompatActivity {
                 filterArray[0] = new InputFilter.LengthFilter(1);
                 clockView.setFilters(filterArray);
                 clockView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(25, 50);
+                LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(30, 50);
                 clockView.setLayoutParams(myP);
-                clockView.setBackgroundResource(android.R.color.background_light);
+                clockView.setGravity(Gravity.CENTER);
+                clockView.setBackgroundResource(android.R.color.darker_gray);
                 clockView.setHint("-");
                 clockView.addTextChangedListener(new TextWatcher() {
                     @Override
