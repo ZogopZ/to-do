@@ -147,6 +147,8 @@ public class MainActivity extends AppCompatActivity {
         public void setChildren() {
             ClockInstance clockInstance = new ClockInstance(getApplicationContext());
             todoInstance.addView(clockInstance);
+            TodoCheckBox todoCheckBox = new TodoCheckBox(getApplicationContext());
+            todoInstance.addView(todoCheckBox);
             TodoText todoText = new TodoText(getApplicationContext());
             todoInstance.addView(todoText);
             TodoRemove todoRemove = new TodoRemove(getApplicationContext());
@@ -274,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
                         for (int i = 0; i < childCount; i++) {
                             if (clockInstance.getChildAt(i) == clockView) {
                                 if (i == 4) {
-                                    todoInstance.getChildAt(1).requestFocus();
+                                    todoInstance.getChildAt(2).requestFocus();
                                 }
                                 else if (i == 1) {
                                     clockInstance.getChildAt(i + 2).requestFocus();
@@ -309,6 +311,22 @@ public class MainActivity extends AppCompatActivity {
                 clockView.setLayoutParams(myP);
                 clockView.setBackgroundResource(android.R.color.transparent);
             }
+        }
+    }
+
+    public static class TodoCheckBox extends androidx.appcompat.widget.AppCompatCheckBox {
+        private final TodoCheckBox todoCheckBox;
+
+        public TodoCheckBox(@NonNull Context context) {
+            super(context);
+            this.todoCheckBox = this;
+            todoCheckBox.setProperties();
+        }
+
+        private void setProperties() {
+            todoCheckBox.setGravity(Gravity.CENTER_HORIZONTAL);
+            todoCheckBox.setButtonDrawable(android.R.drawable.btn_star);
+            todoCheckBox.setClickable(true);
         }
     }
 
