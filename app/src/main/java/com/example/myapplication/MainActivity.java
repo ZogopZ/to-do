@@ -214,13 +214,6 @@ public class MainActivity extends AppCompatActivity {
             clockInstance.setChildrenIndexes();
         }
 
-        public ClockInstance(Context context, String clockContent) {
-            super(context);
-            this.clockInstance = this;
-            clockInstance.setProperties();
-            clockInstance.setChildren(clockContent);
-        }
-
         public void setProperties() {
             clockInstance.setGravity(Gravity.CENTER_HORIZONTAL);
             clockInstance.setOrientation(LinearLayout.HORIZONTAL);
@@ -231,21 +224,6 @@ public class MainActivity extends AppCompatActivity {
                 ClockView clockView = new ClockView(getApplicationContext());
                 if (!(i == 2)) {
                     clockView.setProperties();
-                }
-                else {
-                    clockView.setProperties(':');
-                }
-                clockInstance.addView(clockView);
-            }
-        }
-
-        public void setChildren(String clockContent) {
-            for (int i = 0; i < 5; i++) {
-                char clockValue = clockContent.charAt(i);
-                ClockView clockView = new ClockView(getContext().getApplicationContext());
-                if (!(i == 2)) {
-                    clockView.setProperties();
-                    clockView.setText(Character.toString(clockValue));
                 }
                 else {
                     clockView.setProperties(':');
@@ -281,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
                 LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(25, 50);
                 clockView.setLayoutParams(myP);
                 clockView.setBackgroundResource(android.R.color.background_light);
+                clockView.setHint("-");
                 clockView.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
