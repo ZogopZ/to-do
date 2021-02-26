@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
                 final LinearLayout todoInstance = new TodoInstance(context, null);
                 gridLayout.addView(todoInstance);
                 ClockInstance clockInstance = (ClockInstance) todoInstance.getChildAt(0);
-                ClockInstance.ClockView clockView = (ClockInstance.ClockView) clockInstance.getChildAt(0);
+                ClockView clockView = (ClockView) clockInstance.getChildAt(0);
                 clockView.requestFocus();
                 showKeyboard(context, clockView);
             }
@@ -91,35 +91,6 @@ public class MainActivity extends AppCompatActivity {
     public static void showKeyboard(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.showSoftInput(view, 0);
-    }
-
-    public class TodoRemove extends androidx.appcompat.widget.AppCompatImageButton {
-        private final TodoRemove todoRemove;
-
-        public TodoRemove(Context context) {
-            super(context);
-            this.todoRemove = this;
-            todoRemove.setProperties();
-        }
-
-        /**
-         * setProperties() method sets the parameters of the remove
-         * button of each to-do instance.
-         * onClick it removes its parent (LinearLayout to-do instance).
-         */
-        public void setProperties() {
-            todoRemove.setImageResource(R.drawable.remove_icon);
-            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(25, 25);
-            myP.leftMargin = 20;
-            todoRemove.setLayoutParams(myP);
-            todoRemove.setOnClickListener(new OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    LinearLayout todoInstance = (LinearLayout) view.getParent();
-                    removeTodoInstance(todoInstance);
-                }
-            });
-        }
     }
 
     public void removeTodoInstance(LinearLayout todoInstance) {
@@ -178,10 +149,10 @@ public class MainActivity extends AppCompatActivity {
         public int compareTo(TodoInstance todoRename) {
             ClockInstance clockInstance1 = (ClockInstance) todoRename.getChildAt(0);
             StringBuilder clock1 = new StringBuilder();
-            ClockInstance.ClockView clockView1;
+            ClockView clockView1;
             for (int i = 0; i < 5; i++) {
                 if (i != 2) {
-                    clockView1 = (ClockInstance.ClockView) clockInstance1.getChildAt(i);
+                    clockView1 = (ClockView) clockInstance1.getChildAt(i);
                     clock1.append(Objects.requireNonNull(clockView1.getText()).toString());
                 }
             }
@@ -189,10 +160,10 @@ public class MainActivity extends AppCompatActivity {
 
             ClockInstance clockInstance2 = (ClockInstance) todoInstance.getChildAt(0);
             StringBuilder clock2 = new StringBuilder();
-            ClockInstance.ClockView clockView2;
+            ClockView clockView2;
             for (int i = 0; i < 5; i++) {
                 if (i != 2) {
-                    clockView2 = (ClockInstance.ClockView) clockInstance2.getChildAt(i);
+                    clockView2 = (ClockView) clockInstance2.getChildAt(i);
                     clock2.append(Objects.requireNonNull(clockView2.getText()).toString());
                 }
             }
@@ -244,76 +215,77 @@ public class MainActivity extends AppCompatActivity {
             clockViewColon = 2;
         }
 
-        public class ClockView extends androidx.appcompat.widget.AppCompatEditText{
-            private final ClockView clockView;
+    }
 
-            public ClockView(Context context) {
-                super(context);
-                this.clockView = this;
-            }
+    public static class ClockView extends androidx.appcompat.widget.AppCompatEditText{
+        private final ClockView clockView;
 
-            public void setProperties() {
-                clockView.setId(View.generateViewId());
-                clockView.setInputType(InputType.TYPE_CLASS_NUMBER);
-                clockView.setFocusableInTouchMode(true);
-                InputFilter[] filterArray = new InputFilter[1];
-                filterArray[0] = new InputFilter.LengthFilter(1);
-                clockView.setFilters(filterArray);
-                clockView.setImeOptions(EditorInfo.IME_ACTION_DONE);
-                LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(30, 50);
-                clockView.setLayoutParams(myP);
-                clockView.setGravity(Gravity.CENTER);
-                clockView.setBackgroundResource(android.R.color.darker_gray);
-                clockView.setHint("-");
-                clockView.addTextChangedListener(new TextWatcher() {
-                    @Override
-                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        public ClockView(Context context) {
+            super(context);
+            this.clockView = this;
+        }
 
-                    }
+        public void setProperties() {
+            clockView.setId(View.generateViewId());
+            clockView.setInputType(InputType.TYPE_CLASS_NUMBER);
+            clockView.setFocusableInTouchMode(true);
+            InputFilter[] filterArray = new InputFilter[1];
+            filterArray[0] = new InputFilter.LengthFilter(1);
+            clockView.setFilters(filterArray);
+            clockView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(30, 50);
+            clockView.setLayoutParams(myP);
+            clockView.setGravity(Gravity.CENTER);
+            clockView.setBackgroundResource(android.R.color.darker_gray);
+            clockView.setHint("-");
+            clockView.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-                    @Override
-                    public void onTextChanged(CharSequence s, int start, int before, int count) {
-                        final LinearLayout clockInstance = ((LinearLayout) clockView.getParent());
-                        final LinearLayout todoInstance = ((LinearLayout) clockInstance.getParent());
-                        int childCount = clockInstance.getChildCount();
-                        for (int i = 0; i < childCount; i++) {
-                            if (clockInstance.getChildAt(i) == clockView) {
-                                if (i == 4) {
-                                    todoInstance.getChildAt(2).requestFocus();
-                                }
-                                else if (i == 1) {
-                                    clockInstance.getChildAt(i + 2).requestFocus();
-                                }
-                                else {
-                                    clockInstance.getChildAt(i + 1).requestFocus();
-                                }
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    final LinearLayout clockInstance = ((LinearLayout) clockView.getParent());
+                    final LinearLayout todoInstance = ((LinearLayout) clockInstance.getParent());
+                    int childCount = clockInstance.getChildCount();
+                    for (int i = 0; i < childCount; i++) {
+                        if (clockInstance.getChildAt(i) == clockView) {
+                            if (i == 4) {
+                                todoInstance.getChildAt(2).requestFocus();
+                            }
+                            else if (i == 1) {
+                                clockInstance.getChildAt(i + 2).requestFocus();
+                            }
+                            else {
+                                clockInstance.getChildAt(i + 1).requestFocus();
                             }
                         }
                     }
+                }
 
-                    @Override
-                    public void afterTextChanged(Editable s) {
+                @Override
+                public void afterTextChanged(Editable s) {
 
-                    }
-                });
-                clockView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                        return actionId == EditorInfo.IME_ACTION_DONE;
-                    }
-                });
-            }
+                }
+            });
+            clockView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    return actionId == EditorInfo.IME_ACTION_DONE;
+                }
+            });
+        }
 
-            public void setProperties(Character colon) {
-                clockView.setId(View.generateViewId());
-                InputFilter[] filterArray = new InputFilter[1];
-                filterArray[0] = new InputFilter.LengthFilter(1);
-                clockView.setFilters(filterArray);
-                clockView.setText(colon.toString());
-                clockView.setEnabled(false);
-                LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(10, 50);
-                clockView.setLayoutParams(myP);
-                clockView.setBackgroundResource(android.R.color.transparent);
-            }
+        public void setProperties(Character colon) {
+            clockView.setId(View.generateViewId());
+            InputFilter[] filterArray = new InputFilter[1];
+            filterArray[0] = new InputFilter.LengthFilter(1);
+            clockView.setFilters(filterArray);
+            clockView.setText(colon.toString());
+            clockView.setEnabled(false);
+            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(10, 50);
+            clockView.setLayoutParams(myP);
+            clockView.setBackgroundResource(android.R.color.transparent);
         }
     }
 
@@ -368,6 +340,35 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     }
                     return false;
+                }
+            });
+        }
+    }
+
+    public class TodoRemove extends androidx.appcompat.widget.AppCompatImageButton {
+        private final TodoRemove todoRemove;
+
+        public TodoRemove(Context context) {
+            super(context);
+            this.todoRemove = this;
+            todoRemove.setProperties();
+        }
+
+        /**
+         * setProperties() method sets the parameters of the remove
+         * button of each to-do instance.
+         * onClick it removes its parent (LinearLayout to-do instance).
+         */
+        public void setProperties() {
+            todoRemove.setImageResource(R.drawable.remove_icon);
+            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(25, 25);
+            myP.leftMargin = 20;
+            todoRemove.setLayoutParams(myP);
+            todoRemove.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    LinearLayout todoInstance = (LinearLayout) view.getParent();
+                    removeTodoInstance(todoInstance);
                 }
             });
         }
