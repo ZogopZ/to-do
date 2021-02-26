@@ -10,6 +10,8 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.*;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.*;
@@ -315,7 +317,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static class TodoCheckBox extends androidx.appcompat.widget.AppCompatCheckBox {
+    public class TodoCheckBox extends androidx.appcompat.widget.AppCompatCheckBox {
         private final TodoCheckBox todoCheckBox;
 
         public TodoCheckBox(@NonNull Context context) {
@@ -328,6 +330,8 @@ public class MainActivity extends AppCompatActivity {
             todoCheckBox.setGravity(Gravity.CENTER_HORIZONTAL);
             todoCheckBox.setButtonDrawable(android.R.drawable.btn_star);
             todoCheckBox.setClickable(true);
+            Animation slide = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.star_animation);
+            todoCheckBox.setAnimation(slide);
         }
     }
 
