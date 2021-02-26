@@ -22,37 +22,52 @@ import androidx.gridlayout.widget.GridLayout;
 import java.util.*;
 
 public class MainActivity extends AppCompatActivity {
+    private GridLayout gridLayout;
+    private ImageButton addButton;
+    private ImageButton settingsButton;
+    private ImageButton shutdownButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final Context context = getApplicationContext();
-        final GridLayout gridLayout = findViewById(R.id.gridLayout);
+        setGridLayout();
+        setAddButton();
+        setSettingsButton();
+        setShutdownButton();
+    }
 
-        final ImageButton addButton = findViewById(R.id.addButton);
-        addButton.setOnClickListener(new View.OnClickListener() {
+    private void setGridLayout() {
+        this.gridLayout = findViewById(R.id.gridLayout);
+    }
+
+    public GridLayout getGridLayout() {
+        return this.gridLayout;
+    }
+
+    private void setAddButton() {
+        this.addButton = findViewById(R.id.addButton);
+        this.addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final LinearLayout todoInstance = new TodoInstance(context, null);
-                gridLayout.addView(todoInstance);
+                getAddButton().setClickable(false);
+                final LinearLayout todoInstance = new TodoInstance(getApplicationContext(), null);
+                getGridLayout().addView(todoInstance);
                 ClockInstance clockInstance = (ClockInstance) todoInstance.getChildAt(0);
                 ClockView clockView = (ClockView) clockInstance.getChildAt(0);
                 clockView.requestFocus();
-                showKeyboard(context, clockView);
+                showKeyboard(getApplicationContext(), clockView);
             }
         });
+    }
 
-        final ImageButton shutdownButton = findViewById(R.id.shutdownButton);
-        shutdownButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finishAndRemoveTask();
-            }
-        });
+    public ImageButton getAddButton() {
+        return this.addButton;
+    }
 
-        final ImageButton settingsButton = findViewById(R.id.settingsButton);
-        settingsButton.setOnClickListener(new View.OnClickListener() {
+    private void setSettingsButton() {
+        this.settingsButton = findViewById(R.id.settingsButton);
+        getSettingsButton().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //todo: This will start a new settings activity.
@@ -60,7 +75,24 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
 
+    public ImageButton getSettingsButton() {
+        return this.settingsButton;
+    }
+
+    private void setShutdownButton() {
+        this.shutdownButton = findViewById(R.id.shutdownButton);
+        getShutdownButton().setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finishAndRemoveTask();
+            }
+        });
+    }
+
+    public ImageButton getShutdownButton() {
+        return this.shutdownButton;
     }
 
     /**
@@ -217,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public static class ClockView extends androidx.appcompat.widget.AppCompatEditText{
+    public class ClockView extends androidx.appcompat.widget.AppCompatEditText{
         private final ClockView clockView;
 
         public ClockView(Context context) {
@@ -252,6 +284,8 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 0; i < childCount; i++) {
                         if (clockInstance.getChildAt(i) == clockView) {
                             if (i == 4) {
+                                // Resets the add to-do button to clickable. The user can now add a new to-do.
+                                getAddButton().setClickable(true);
                                 todoInstance.getChildAt(2).requestFocus();
                             }
                             else if (i == 1) {
