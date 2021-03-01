@@ -346,10 +346,11 @@ public class MainActivity extends AppCompatActivity {
         public void setProperties() {
             LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(25, 25);
             clockEdit.setLayoutParams(myP);
-            clockEdit.setBackgroundResource(R.drawable.edit_icon);{
+            clockEdit.setBackgroundResource(R.drawable.edit_icon);
             clockEdit.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    getAddButton().setClickable(false);
                     TodoInstance todoInstance = (TodoInstance) ((ClockInstance) v.getParent()).getParent();
                     ArrayList<View> todoChildren = new ArrayList<>();
                     for (int i = 0; i < todoInstance.getChildCount(); i++) {
