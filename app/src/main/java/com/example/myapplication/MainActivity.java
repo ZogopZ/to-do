@@ -334,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static class ClockEdit extends androidx.appcompat.widget.AppCompatButton {
+    public class ClockEdit extends androidx.appcompat.widget.AppCompatButton {
         private final ClockEdit clockEdit;
 
         public ClockEdit(@NonNull Context context) {
@@ -346,7 +346,32 @@ public class MainActivity extends AppCompatActivity {
         public void setProperties() {
             LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(25, 25);
             clockEdit.setLayoutParams(myP);
-            clockEdit.setBackgroundResource(R.drawable.edit_icon);
+            clockEdit.setBackgroundResource(R.drawable.edit_icon);{
+            clockEdit.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    TodoInstance todoInstance = (TodoInstance) ((ClockInstance) v.getParent()).getParent();
+                    ArrayList<View> todoChildren = new ArrayList<>();
+                    for (int i = 0; i < todoInstance.getChildCount(); i++) {
+                        todoChildren.add(todoInstance.getChildAt(i));
+                    }
+                    int iterator = 0;
+                    for (View todoChild : todoChildren) {
+                        todoInstance.removeView(todoChild);
+                        if (iterator == 0) {
+                            ClockInstance clockInstance = new ClockInstance(getApplicationContext());
+                            todoInstance.addView(clockInstance);
+                        }
+                        else {
+                            todoInstance.addView(todoChild);
+                        }
+                        iterator++;
+                    }
+                    ClockView clockView = (ClockView) ((ClockInstance) todoInstance.getChildAt(0)).getChildAt(0);
+                    clockView.requestFocus();
+                    showKeyboard(getApplicationContext(), clockView);
+                }
+            });
         }
     }
 
