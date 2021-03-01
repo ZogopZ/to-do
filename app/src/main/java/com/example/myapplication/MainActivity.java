@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -146,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
         public void setProperties() {
             todoInstance.setOrientation(LinearLayout.HORIZONTAL);
             LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(LayoutParams.MATCH_PARENT, GridLayout.LayoutParams.WRAP_CONTENT);
+            myP.topMargin = 20;
             todoInstance.setLayoutParams(myP);
         }
 
@@ -212,6 +214,7 @@ public class MainActivity extends AppCompatActivity {
         private int clockViewColon;
         private int clockViewThree;
         private int clockViewFour;
+//        private int clockEdit;
 
         public ClockInstance(Context context) {
             super(context);
@@ -222,7 +225,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void setProperties() {
-            clockInstance.setGravity(Gravity.CENTER);
+            LinearLayout.LayoutParams myP = new LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            clockInstance.setLayoutParams(myP);
             clockInstance.setOrientation(LinearLayout.HORIZONTAL);
         }
 
@@ -237,6 +241,8 @@ public class MainActivity extends AppCompatActivity {
                 }
                 clockInstance.addView(clockView);
             }
+            ClockEdit clockEdit = new ClockEdit(getApplicationContext());
+            clockInstance.addView(clockEdit);
         }
 
         public void setChildrenIndexes() {
@@ -266,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
             clockView.setFilters(filterArray);
             clockView.setImeOptions(EditorInfo.IME_ACTION_DONE);
             LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(30, 50);
+            myP.topMargin = 20;
             clockView.setLayoutParams(myP);
             clockView.setGravity(Gravity.CENTER);
             clockView.setBackgroundResource(android.R.color.darker_gray);
@@ -296,6 +303,9 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                     }
+                    /* Once set, the clock view cannot be edited directly.
+                       The user can still edit the clock instance using the edit button. */
+                    clockView.setEnabled(false);
                 }
 
                 @Override
@@ -318,8 +328,50 @@ public class MainActivity extends AppCompatActivity {
             clockView.setText(colon.toString());
             clockView.setEnabled(false);
             LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(10, 50);
+            myP.topMargin = 20;
             clockView.setLayoutParams(myP);
             clockView.setBackgroundResource(android.R.color.transparent);
+        }
+    }
+
+    public class ClockEdit extends androidx.appcompat.widget.AppCompatButton {
+        private final ClockEdit clockEdit;
+
+        public ClockEdit(@NonNull Context context) {
+            super(context);
+            this.clockEdit = this;
+            clockEdit.setProperties();
+        }
+
+        public void setProperties() {
+            LinearLayout.LayoutParams myP = new LinearLayout.LayoutParams(25, 25);
+            clockEdit.setLayoutParams(myP);
+            clockEdit.setBackgroundResource(R.drawable.edit_icon);{
+            clockEdit.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    TodoInstance todoInstance = (TodoInstance) ((ClockInstance) v.getParent()).getParent();
+                    ArrayList<View> todoChildren = new ArrayList<>();
+                    for (int i = 0; i < todoInstance.getChildCount(); i++) {
+                        todoChildren.add(todoInstance.getChildAt(i));
+                    }
+                    int iterator = 0;
+                    for (View todoChild : todoChildren) {
+                        todoInstance.removeView(todoChild);
+                        if (iterator == 0) {
+                            ClockInstance clockInstance = new ClockInstance(getApplicationContext());
+                            todoInstance.addView(clockInstance);
+                        }
+                        else {
+                            todoInstance.addView(todoChild);
+                        }
+                        iterator++;
+                    }
+                    ClockView clockView = (ClockView) ((ClockInstance) todoInstance.getChildAt(0)).getChildAt(0);
+                    clockView.requestFocus();
+                    showKeyboard(getApplicationContext(), clockView);
+                }
+            });
         }
     }
 
