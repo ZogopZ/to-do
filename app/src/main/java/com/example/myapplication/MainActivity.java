@@ -1,9 +1,10 @@
 package com.example.myapplication;
 
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
@@ -315,6 +316,20 @@ public class MainActivity extends AppCompatActivity {
             });
             clockView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
                 public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    /*
+                     * IME_ACTION_DONE listener is used here to
+                     * determine if the user tried to press it before
+                     * editing the clock view. IME_ACTION_DONE button
+                     * itself is not used to complete the editing of
+                     * the clock view.
+                     */
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        ClockInstance clockInstance = (ClockInstance) v.getParent();
+                        AnimatorSet set = (AnimatorSet) AnimatorInflater.loadAnimator(getApplicationContext(),
+                                R.animator.nudge);      // Load nudge animation.
+                        set.setTarget(clockInstance);   // Set clock instance as the view to be nudged.
+                        set.start();                    // Start the animation.
+                    }
                     return actionId == EditorInfo.IME_ACTION_DONE;
                 }
             });
