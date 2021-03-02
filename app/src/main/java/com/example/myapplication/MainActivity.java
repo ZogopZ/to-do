@@ -117,6 +117,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void disabler(View enabledView) {
+        GridLayout gridLayout = getGridLayout();
+        if (enabledView instanceof ClockView) {
+            ClockInstance clockInstance = (ClockInstance) enabledView.getParent();
+            TodoInstance todoInstance = (TodoInstance) clockInstance.getParent();
+            for (int i = 0; i < gridLayout.getChildCount(); i++) {
+                View gridView = gridLayout.getChildAt(i);
+                for (View descendantView : gridView.getTouchables()) {
+                    descendantView.setEnabled(false);
+                }
+            }
+        }
+    }
+
     public static void hideKeyboard(Context context, View view) {
         InputMethodManager imm = (InputMethodManager) context.getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
@@ -324,6 +338,7 @@ public class MainActivity extends AppCompatActivity {
                      * the clock view.
                      */
                     if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        disabler(clockView);
                         ClockInstance clockInstance = (ClockInstance) v.getParent();
                         AnimatorSet set = (AnimatorSet) AnimatorInflater.loadAnimator(getApplicationContext(),
                                 R.animator.nudge);      // Load nudge animation.
