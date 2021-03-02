@@ -21,6 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.gridlayout.widget.GridLayout;
+
 import java.util.*;
 
 public class MainActivity extends AppCompatActivity {
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
                 getGridLayout().addView(todoInstance);
                 ClockInstance clockInstance = (ClockInstance) todoInstance.getChildAt(0);
                 ClockView clockView = (ClockView) clockInstance.getChildAt(0);
+                disabler(clockView);
                 clockView.requestFocus();
                 showKeyboard(getApplicationContext(), clockView);
             }
@@ -117,16 +119,46 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void enabler() {
+        GridLayout gridLayout = getGridLayout();
+
+        for (int i = 0; i < gridLayout.getChildCount(); i++) {
+            View childView = gridLayout.getChildAt(i);
+            if (childView instanceof ImageButton) {
+                childView.setClickable(true);
+            }
+            else if (childView instanceof TodoInstance) {
+                TodoInstance todoInstance = (TodoInstance) childView;
+                for (int j = 0; j < todoInstance.getChildCount(); j++) {
+                    View todoView = todoInstance.getChildAt(j);
+                    if (todoView instanceof TodoCheckBox || todoView instanceof TodoRemove) {
+                        todoView.setEnabled(true);
+                        todoView.setClickable(true);
+                    }
+                    else if (todoView instanceof TodoText) {
+                        todoView.setEnabled(true);
+                    }
+                    else if (todoView instanceof ClockInstance) {
+                        ((ClockInstance) todoView).getChildAt(5).setEnabled(true);
+                        ((ClockInstance) todoView).getChildAt(5).setClickable(true);
+                    }
+                }
+            }
+        }
+    }
+
     public void disabler(View enabledView) {
         GridLayout gridLayout = getGridLayout();
-        if (enabledView instanceof ClockView) {
-            ClockInstance clockInstance = (ClockInstance) enabledView.getParent();
-            TodoInstance todoInstance = (TodoInstance) clockInstance.getParent();
-            for (int i = 0; i < gridLayout.getChildCount(); i++) {
-                View gridView = gridLayout.getChildAt(i);
-                for (View descendantView : gridView.getTouchables()) {
+        for (int i = 0; i < gridLayout.getChildCount(); i++) {
+            View gridView = gridLayout.getChildAt(i);
+            for (View descendantView : gridView.getTouchables()) {
+                if (descendantView == enabledView) {
+                    continue;
+                }
+                else if (descendantView instanceof TodoText || descendantView instanceof ClockView) {
                     descendantView.setEnabled(false);
                 }
+                descendantView.setClickable(false);
             }
         }
     }
@@ -292,6 +324,14 @@ public class MainActivity extends AppCompatActivity {
             clockView.setGravity(Gravity.CENTER);
             clockView.setBackgroundResource(android.R.color.darker_gray);
             clockView.setHint("-");
+//            clockView.setOnFocusChangeListener(new OnFocusChangeListener() {
+//                @Override
+//                public void onFocusChange(View v, boolean hasFocus) {
+//                    if (hasFocus) {
+//                        showKeyboard(getApplicationContext(), v);
+//                    }
+//                }
+//            });
             clockView.addTextChangedListener(new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -306,21 +346,31 @@ public class MainActivity extends AppCompatActivity {
                     for (int i = 0; i < childCount; i++) {
                         if (clockInstance.getChildAt(i) == clockView) {
                             if (i == 4) {
-                                // Resets the add to-do button to clickable. The user can now add a new to-do.
-                                getAddButton().setClickable(true);
+                                enabler(); // Re-enables disabled views.
+                                todoInstance.getChildAt(2).setEnabled(true);
+                                todoInstance.getChildAt(2).setClickable(true);
                                 todoInstance.getChildAt(2).requestFocus();
                             }
                             else if (i == 1) {
+                                clockInstance.getChildAt(i + 2).setEnabled(true);
+                                clockInstance.getChildAt(i + 2).setClickable(true);
                                 clockInstance.getChildAt(i + 2).requestFocus();
                             }
                             else {
+                                clockInstance.getChildAt(i + 1).setEnabled(true);
+                                clockInstance.getChildAt(i + 1).setClickable(true);
                                 clockInstance.getChildAt(i + 1).requestFocus();
                             }
+                            /*
+                             * The current clock view is specifically
+                             * disabled here to prevent the soft keyboard
+                             * from auto-hiding when switching focus to
+                             * the next view (ClockView or TodoText).
+                             */
+                            clockView.setEnabled(false);
+                            clockView.setClickable(false);
                         }
                     }
-                    /* Once set, the clock view cannot be edited directly.
-                       The user can still edit the clock instance using the edit button. */
-                    clockView.setEnabled(false);
                 }
 
                 @Override
@@ -380,7 +430,7 @@ public class MainActivity extends AppCompatActivity {
             clockEdit.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    getAddButton().setClickable(false);
+                    disabler(clockEdit);
                     TodoInstance todoInstance = (TodoInstance) ((ClockInstance) v.getParent()).getParent();
                     ArrayList<View> todoChildren = new ArrayList<>();
                     for (int i = 0; i < todoInstance.getChildCount(); i++) {
