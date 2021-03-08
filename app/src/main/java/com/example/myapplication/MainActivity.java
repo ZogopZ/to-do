@@ -469,8 +469,9 @@ public class MainActivity extends AppCompatActivity {
             todoCheckBox.setGravity(Gravity.CENTER_HORIZONTAL);
             todoCheckBox.setButtonDrawable(android.R.drawable.btn_star);
             todoCheckBox.setClickable(true);
-            Animation slide = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.star_animation);
-            todoCheckBox.setAnimation(slide);
+            todoCheckBox.setVisibility(View.INVISIBLE);
+//            Animation slide = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.star_animation);
+//            todoCheckBox.setAnimation(slide);
         }
     }
 
@@ -504,6 +505,12 @@ public class MainActivity extends AppCompatActivity {
                         reOrderViews();
                         todoText.clearFocus();
                         hideKeyboard(getApplicationContext(), todoText);
+                        TodoCheckBox todoCheckBox = (TodoCheckBox) ((TodoInstance) todoText.getParent()).getChildAt(1);
+                        AnimatorSet set = (AnimatorSet) AnimatorInflater.loadAnimator(getApplicationContext(),
+                                R.animator.star_animation);
+                        set.setTarget(todoCheckBox);
+                        todoCheckBox.setVisibility(View.VISIBLE);
+                        set.start();
                         return true;
                     }
                     return false;
