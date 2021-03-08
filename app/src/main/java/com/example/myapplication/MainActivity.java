@@ -181,7 +181,8 @@ public class MainActivity extends AppCompatActivity {
     public class TodoInstance extends LinearLayout implements Comparable<TodoInstance> {
         private final TodoInstance todoInstance;
         private int clockViewIndex;
-        private int textViewIndex;
+        private ClockInstance clockInstance;
+        private TodoText todoText;
         private int removeViewIndex;
 
         public TodoInstance(Context context, @Nullable AttributeSet attrs) {
@@ -199,58 +200,68 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void setChildren() {
-            ClockInstance clockInstance = new ClockInstance(getApplicationContext());
-            todoInstance.addView(clockInstance);
+//            ClockInstance clockInstance = new ClockInstance(getApplicationContext());
+//            todoInstance.addView(clockInstance);
+            this.clockInstance = new ClockInstance(getApplicationContext());
+            todoInstance.addView(this.clockInstance);
+
             TodoCheckBox todoCheckBox = new TodoCheckBox(getApplicationContext());
             todoInstance.addView(todoCheckBox);
-            TodoText todoText = new TodoText(getApplicationContext());
-            todoInstance.addView(todoText);
+            this.todoText = new TodoText(getApplicationContext());
+            todoInstance.addView(this.todoText);
             TodoRemove todoRemove = new TodoRemove(getApplicationContext());
             todoInstance.addView(todoRemove);
-            todoInstance.setChildrenIndexes();
+//            todoInstance.setChildrenIndexes();
         }
 
-        public void setChildrenIndexes() {
-            View childView;
-            for (int i = 0; i < todoInstance.getChildCount(); i++) {
-                childView = todoInstance.getChildAt(i);
-                if (childView instanceof ClockInstance) {
-                    clockViewIndex = i;
-                }
-                else if (childView instanceof TodoText) {
-                    textViewIndex = i;
-                }
-                else if (childView instanceof TodoRemove) {
-                    removeViewIndex = i;
-                }
-            }
+        public TodoText getTodoText() {
+            return this.todoText;
         }
+
+        public ClockInstance getClockInstance() {
+            return this.clockInstance;
+        }
+
+//        public void setChildrenIndexes() {
+//            View childView;
+//            for (int i = 0; i < todoInstance.getChildCount(); i++) {
+//                childView = todoInstance.getChildAt(i);
+//                if (childView instanceof ClockInstance) {
+//                    clockViewIndex = i;
+//                }
+//                else if (childView instanceof TodoText) {
+//                    textViewIndex = i;
+//                }
+//                else if (childView instanceof TodoRemove) {
+//                    removeViewIndex = i;
+//                }
+//            }
+//        }
+
 
         @Override
-        public int compareTo(TodoInstance todoRename) {
-            ClockInstance clockInstance1 = (ClockInstance) todoRename.getChildAt(0);
-            StringBuilder clock1 = new StringBuilder();
-            ClockView clockView1;
+        public int compareTo(TodoInstance todoComparable) {
+            ClockInstance clockComparableTo = (ClockInstance) todoComparable.getChildAt(0);
+            StringBuilder clockContentComparableTo = new StringBuilder();
+            ClockView clockView;
             for (int i = 0; i < 5; i++) {
                 if (i != 2) {
-                    clockView1 = (ClockView) clockInstance1.getChildAt(i);
-                    clock1.append(Objects.requireNonNull(clockView1.getText()).toString());
+                    clockView = (ClockView) clockComparableTo.getChildAt(i);
+                    clockContentComparableTo.append(Objects.requireNonNull(clockView.getText()).toString());
                 }
             }
-            int comparator1 = Integer.parseInt(clock1.toString());
+            int comparatorTo = Integer.parseInt(clockContentComparableTo.toString());
 
-            ClockInstance clockInstance2 = (ClockInstance) todoInstance.getChildAt(0);
-            StringBuilder clock2 = new StringBuilder();
-            ClockView clockView2;
+            ClockInstance clockComparableAgainst = getClockInstance();
+            StringBuilder clockContentComparableAgainst = new StringBuilder();
             for (int i = 0; i < 5; i++) {
                 if (i != 2) {
-                    clockView2 = (ClockView) clockInstance2.getChildAt(i);
-                    clock2.append(Objects.requireNonNull(clockView2.getText()).toString());
+                    clockView = (ClockView) clockComparableAgainst.getChildAt(i);
+                    clockContentComparableAgainst.append(Objects.requireNonNull(clockView.getText()).toString());
                 }
             }
-            int comparator2 = Integer.parseInt(clock2.toString());
-            System.out.println("@@@@ " + comparator2 + " @@@ " + comparator1);
-            return comparator2 - comparator1;
+            int comparatorAgainst = Integer.parseInt(clockContentComparableAgainst.toString());
+            return comparatorAgainst - comparatorTo;
         }
     }
 
