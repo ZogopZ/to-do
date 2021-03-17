@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
      * The reOrderViews method rearranges the to-do instances of the
      * gridLayout according to time ascending. The actual reordering
      * occurs when the user presses IME_ACTION_DONE in a to-do's
-     * instance text view referenced here are todoText.
+     * text view. This text view is referenced here as todoText.
      */
     public void reOrderViews() {
         GridLayout gridLayout = findViewById(R.id.gridLayout);
@@ -180,9 +180,8 @@ public class MainActivity extends AppCompatActivity {
 
     public class TodoInstance extends LinearLayout implements Comparable<TodoInstance> {
         private final TodoInstance todoInstance;
-        private int clockViewIndex;
-        private int textViewIndex;
-        private int removeViewIndex;
+        private ClockInstance clockInstance;
+        private TodoText todoText;
 
         public TodoInstance(Context context, @Nullable AttributeSet attrs) {
             super(context, attrs);
@@ -199,76 +198,63 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void setChildren() {
-            ClockInstance clockInstance = new ClockInstance(getApplicationContext());
-            todoInstance.addView(clockInstance);
+            this.clockInstance = new ClockInstance(getApplicationContext());
+            todoInstance.addView(this.clockInstance);
             TodoCheckBox todoCheckBox = new TodoCheckBox(getApplicationContext());
             todoInstance.addView(todoCheckBox);
-            TodoText todoText = new TodoText(getApplicationContext());
-            todoInstance.addView(todoText);
+            this.todoText = new TodoText(getApplicationContext());
+            todoInstance.addView(this.todoText);
             TodoRemove todoRemove = new TodoRemove(getApplicationContext());
             todoInstance.addView(todoRemove);
-            todoInstance.setChildrenIndexes();
         }
 
-        public void setChildrenIndexes() {
-            View childView;
-            for (int i = 0; i < todoInstance.getChildCount(); i++) {
-                childView = todoInstance.getChildAt(i);
-                if (childView instanceof ClockInstance) {
-                    clockViewIndex = i;
-                }
-                else if (childView instanceof TodoText) {
-                    textViewIndex = i;
-                }
-                else if (childView instanceof TodoRemove) {
-                    removeViewIndex = i;
-                }
-            }
+        public TodoText getTodoText() {
+            return this.todoText;
+        }
+
+        public ClockInstance getClockInstance() {
+            return this.clockInstance;
         }
 
         @Override
-        public int compareTo(TodoInstance todoRename) {
-            ClockInstance clockInstance1 = (ClockInstance) todoRename.getChildAt(0);
-            StringBuilder clock1 = new StringBuilder();
-            ClockView clockView1;
-            for (int i = 0; i < 5; i++) {
-                if (i != 2) {
-                    clockView1 = (ClockView) clockInstance1.getChildAt(i);
-                    clock1.append(Objects.requireNonNull(clockView1.getText()).toString());
-                }
+        public int compareTo(TodoInstance todoComparable) {
+            StringBuilder clockContentComparableTo = new StringBuilder();
+            for (ClockView clockView : todoComparable.clockInstance.getClockViewList()) {
+                clockContentComparableTo.append(Objects.requireNonNull(clockView.getText()).toString());
             }
-            int comparator1 = Integer.parseInt(clock1.toString());
+            /*
+             * comparatorTo contains the clock value to compare to.
+             * It consists of 4 digits, one for each clock view.
+             */
+            int comparatorTo = Integer.parseInt(clockContentComparableTo.toString());
 
-            ClockInstance clockInstance2 = (ClockInstance) todoInstance.getChildAt(0);
-            StringBuilder clock2 = new StringBuilder();
-            ClockView clockView2;
-            for (int i = 0; i < 5; i++) {
-                if (i != 2) {
-                    clockView2 = (ClockView) clockInstance2.getChildAt(i);
-                    clock2.append(Objects.requireNonNull(clockView2.getText()).toString());
-                }
+            StringBuilder clockContentComparableAgainst = new StringBuilder();
+            for (ClockView clockView : this.getClockInstance().getClockViewList()) {
+                clockContentComparableAgainst.append(Objects.requireNonNull(clockView.getText()).toString());
             }
-            int comparator2 = Integer.parseInt(clock2.toString());
-            System.out.println("@@@@ " + comparator2 + " @@@ " + comparator1);
-            return comparator2 - comparator1;
+            /*
+             * comparatorAgainst contains the clock value to compare
+             * against. It consists of 4 digits, one for each clock
+             * view.
+             */
+            int comparatorAgainst = Integer.parseInt(clockContentComparableAgainst.toString());
+            return comparatorAgainst - comparatorTo;
         }
     }
 
     public class ClockInstance extends LinearLayout {
         private final ClockInstance clockInstance;
-        private int clockViewOne;
-        private int clockViewTwo;
-        private int clockViewColon;
-        private int clockViewThree;
-        private int clockViewFour;
-//        private int clockEdit;
+        private final ArrayList<ClockView> clockViewList = new ArrayList<>();
+        private ClockView clockViewOne;
+        private ClockView clockViewTwo;
+        private ClockView clockViewThree;
+        private ClockView clockViewFour;
 
         public ClockInstance(Context context) {
             super(context);
             this.clockInstance = this;
             clockInstance.setProperties();
             clockInstance.setChildren();
-            clockInstance.setChildrenIndexes();
         }
 
         public void setProperties() {
@@ -282,6 +268,7 @@ public class MainActivity extends AppCompatActivity {
                 ClockView clockView = new ClockView(getApplicationContext());
                 if (!(i == 2)) {
                     clockView.setProperties();
+                    clockViewList.add(clockView);
                 }
                 else {
                     clockView.setProperties(':');
@@ -290,16 +277,31 @@ public class MainActivity extends AppCompatActivity {
             }
             ClockEdit clockEdit = new ClockEdit(getApplicationContext());
             clockInstance.addView(clockEdit);
+            clockViewOne = clockViewList.get(0);
+            clockViewTwo = clockViewList.get(1);
+            clockViewThree = clockViewList.get(2);
+            clockViewFour = clockViewList.get(3);
         }
 
-        public void setChildrenIndexes() {
-            clockViewOne = 0;
-            clockViewTwo = 1;
-            clockViewThree = 3;
-            clockViewFour = 4;
-            clockViewColon = 2;
+        public ArrayList<ClockView> getClockViewList() {
+            return this.clockViewList;
         }
 
+        public ClockView getClockViewOne() {
+            return this.clockViewOne;
+        }
+
+        public ClockView getClockViewTwo() {
+            return this.clockViewTwo;
+        }
+
+        public ClockView getClockViewThree() {
+            return this.clockViewThree;
+        }
+
+        public ClockView getClockViewFour() {
+            return this.clockViewFour;
+        }
     }
 
     public class ClockView extends androidx.appcompat.widget.AppCompatEditText{
@@ -340,37 +342,37 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    final LinearLayout clockInstance = ((LinearLayout) clockView.getParent());
-                    final LinearLayout todoInstance = ((LinearLayout) clockInstance.getParent());
-                    int childCount = clockInstance.getChildCount();
-                    for (int i = 0; i < childCount; i++) {
-                        if (clockInstance.getChildAt(i) == clockView) {
-                            if (i == 4) {
-                                enabler(); // Re-enables disabled views.
-                                todoInstance.getChildAt(2).setEnabled(true);
-                                todoInstance.getChildAt(2).setClickable(true);
-                                todoInstance.getChildAt(2).requestFocus();
-                            }
-                            else if (i == 1) {
-                                clockInstance.getChildAt(i + 2).setEnabled(true);
-                                clockInstance.getChildAt(i + 2).setClickable(true);
-                                clockInstance.getChildAt(i + 2).requestFocus();
-                            }
-                            else {
-                                clockInstance.getChildAt(i + 1).setEnabled(true);
-                                clockInstance.getChildAt(i + 1).setClickable(true);
-                                clockInstance.getChildAt(i + 1).requestFocus();
-                            }
-                            /*
-                             * The current clock view is specifically
-                             * disabled here to prevent the soft keyboard
-                             * from auto-hiding when switching focus to
-                             * the next view (ClockView or TodoText).
-                             */
-                            clockView.setEnabled(false);
-                            clockView.setClickable(false);
-                        }
+                    ClockInstance clockInstance = (ClockInstance) clockView.getParent();
+                    TodoInstance todoInstance = (TodoInstance) clockInstance.getParent();
+                    if (clockView == clockInstance.getClockViewOne()) {
+                        clockInstance.getClockViewTwo().setEnabled(true);
+                        clockInstance.getClockViewTwo().setClickable(true);
+                        clockInstance.getClockViewTwo().requestFocus();
                     }
+                    else if (clockView == clockInstance.getClockViewTwo()) {
+                        clockInstance.getClockViewThree().setEnabled(true);
+                        clockInstance.getClockViewThree().setClickable(true);
+                        clockInstance.getClockViewThree().requestFocus();
+                    }
+                    else if (clockView == clockInstance.getClockViewThree()) {
+                        clockInstance.getClockViewFour().setEnabled(true);
+                        clockInstance.getClockViewFour().setClickable(true);
+                        clockInstance.getClockViewFour().requestFocus();
+                    }
+                    else if (clockView == clockInstance.getClockViewFour()) {
+                        enabler();
+                        todoInstance.getTodoText().setEnabled(true);
+                        todoInstance.getTodoText().setClickable(true);
+                        todoInstance.getTodoText().requestFocus();
+                    }
+                    /*
+                     * The current clock view is specifically disabled
+                     * here to prevent the soft keyboard from
+                     * auto-hiding when switching focus to the next
+                     * view (ClockView or TodoText).
+                     */
+                    clockView.setEnabled(false);
+                    clockView.setClickable(false);
                 }
 
                 @Override
