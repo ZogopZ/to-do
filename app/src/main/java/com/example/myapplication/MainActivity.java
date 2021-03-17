@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
      * The reOrderViews method rearranges the to-do instances of the
      * gridLayout according to time ascending. The actual reordering
      * occurs when the user presses IME_ACTION_DONE in a to-do's
-     * instance text view referenced here are todoText.
+     * text view. This text view is referenced here as todoText.
      */
     public void reOrderViews() {
         GridLayout gridLayout = findViewById(R.id.gridLayout);
@@ -180,10 +180,8 @@ public class MainActivity extends AppCompatActivity {
 
     public class TodoInstance extends LinearLayout implements Comparable<TodoInstance> {
         private final TodoInstance todoInstance;
-        private int clockViewIndex;
         private ClockInstance clockInstance;
         private TodoText todoText;
-        private int removeViewIndex;
 
         public TodoInstance(Context context, @Nullable AttributeSet attrs) {
             super(context, attrs);
@@ -202,7 +200,6 @@ public class MainActivity extends AppCompatActivity {
         public void setChildren() {
             this.clockInstance = new ClockInstance(getApplicationContext());
             todoInstance.addView(this.clockInstance);
-
             TodoCheckBox todoCheckBox = new TodoCheckBox(getApplicationContext());
             todoInstance.addView(todoCheckBox);
             this.todoText = new TodoText(getApplicationContext());
@@ -221,25 +218,25 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int compareTo(TodoInstance todoComparable) {
-            ClockInstance clockComparableTo = (ClockInstance) todoComparable.getChildAt(0);
             StringBuilder clockContentComparableTo = new StringBuilder();
-            ClockView clockView;
-            for (int i = 0; i < 5; i++) {
-                if (i != 2) {
-                    clockView = (ClockView) clockComparableTo.getChildAt(i);
-                    clockContentComparableTo.append(Objects.requireNonNull(clockView.getText()).toString());
-                }
+            for (ClockView clockView : todoComparable.clockInstance.getClockViewList()) {
+                clockContentComparableTo.append(Objects.requireNonNull(clockView.getText()).toString());
             }
+            /*
+             * comparatorTo contains the clock value to compare to.
+             * It consists of 4 digits, one for each clock view.
+             */
             int comparatorTo = Integer.parseInt(clockContentComparableTo.toString());
 
-            ClockInstance clockComparableAgainst = getClockInstance();
             StringBuilder clockContentComparableAgainst = new StringBuilder();
-            for (int i = 0; i < 5; i++) {
-                if (i != 2) {
-                    clockView = (ClockView) clockComparableAgainst.getChildAt(i);
-                    clockContentComparableAgainst.append(Objects.requireNonNull(clockView.getText()).toString());
-                }
+            for (ClockView clockView : this.getClockInstance().getClockViewList()) {
+                clockContentComparableAgainst.append(Objects.requireNonNull(clockView.getText()).toString());
             }
+            /*
+             * comparatorAgainst contains the clock value to compare
+             * against. It consists of 4 digits, one for each clock
+             * view.
+             */
             int comparatorAgainst = Integer.parseInt(clockContentComparableAgainst.toString());
             return comparatorAgainst - comparatorTo;
         }
@@ -247,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
 
     public class ClockInstance extends LinearLayout {
         private final ClockInstance clockInstance;
+        private final ArrayList<ClockView> clockViewList = new ArrayList<>();
         private ClockView clockViewOne;
         private ClockView clockViewTwo;
         private ClockView clockViewThree;
@@ -266,12 +264,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void setChildren() {
-            ArrayList<ClockView> clockList = new ArrayList<>();
             for (int i = 0; i < 5; i++) {
                 ClockView clockView = new ClockView(getApplicationContext());
                 if (!(i == 2)) {
                     clockView.setProperties();
-                    clockList.add(clockView);
+                    clockViewList.add(clockView);
                 }
                 else {
                     clockView.setProperties(':');
@@ -280,10 +277,14 @@ public class MainActivity extends AppCompatActivity {
             }
             ClockEdit clockEdit = new ClockEdit(getApplicationContext());
             clockInstance.addView(clockEdit);
-            clockViewOne = clockList.get(0);
-            clockViewTwo = clockList.get(1);
-            clockViewThree = clockList.get(2);
-            clockViewFour = clockList.get(3);
+            clockViewOne = clockViewList.get(0);
+            clockViewTwo = clockViewList.get(1);
+            clockViewThree = clockViewList.get(2);
+            clockViewFour = clockViewList.get(3);
+        }
+
+        public ArrayList<ClockView> getClockViewList() {
+            return this.clockViewList;
         }
 
         public ClockView getClockViewOne() {
@@ -365,10 +366,10 @@ public class MainActivity extends AppCompatActivity {
                         todoInstance.getTodoText().requestFocus();
                     }
                     /*
-                     * The current clock view is specifically
-                     * disabled here to prevent the soft keyboard
-                     * from auto-hiding when switching focus to
-                     * the next view (ClockView or TodoText).
+                     * The current clock view is specifically disabled
+                     * here to prevent the soft keyboard from
+                     * auto-hiding when switching focus to the next
+                     * view (ClockView or TodoText).
                      */
                     clockView.setEnabled(false);
                     clockView.setClickable(false);
