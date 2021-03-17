@@ -200,8 +200,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void setChildren() {
-//            ClockInstance clockInstance = new ClockInstance(getApplicationContext());
-//            todoInstance.addView(clockInstance);
             this.clockInstance = new ClockInstance(getApplicationContext());
             todoInstance.addView(this.clockInstance);
 
@@ -211,7 +209,6 @@ public class MainActivity extends AppCompatActivity {
             todoInstance.addView(this.todoText);
             TodoRemove todoRemove = new TodoRemove(getApplicationContext());
             todoInstance.addView(todoRemove);
-//            todoInstance.setChildrenIndexes();
         }
 
         public TodoText getTodoText() {
@@ -221,23 +218,6 @@ public class MainActivity extends AppCompatActivity {
         public ClockInstance getClockInstance() {
             return this.clockInstance;
         }
-
-//        public void setChildrenIndexes() {
-//            View childView;
-//            for (int i = 0; i < todoInstance.getChildCount(); i++) {
-//                childView = todoInstance.getChildAt(i);
-//                if (childView instanceof ClockInstance) {
-//                    clockViewIndex = i;
-//                }
-//                else if (childView instanceof TodoText) {
-//                    textViewIndex = i;
-//                }
-//                else if (childView instanceof TodoRemove) {
-//                    removeViewIndex = i;
-//                }
-//            }
-//        }
-
 
         @Override
         public int compareTo(TodoInstance todoComparable) {
@@ -267,19 +247,16 @@ public class MainActivity extends AppCompatActivity {
 
     public class ClockInstance extends LinearLayout {
         private final ClockInstance clockInstance;
-        private int clockViewOne;
-        private int clockViewTwo;
-        private int clockViewColon;
-        private int clockViewThree;
-        private int clockViewFour;
-//        private int clockEdit;
+        private ClockView clockViewOne;
+        private ClockView clockViewTwo;
+        private ClockView clockViewThree;
+        private ClockView clockViewFour;
 
         public ClockInstance(Context context) {
             super(context);
             this.clockInstance = this;
             clockInstance.setProperties();
             clockInstance.setChildren();
-            clockInstance.setChildrenIndexes();
         }
 
         public void setProperties() {
@@ -289,10 +266,12 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void setChildren() {
+            ArrayList<ClockView> clockList = new ArrayList<>();
             for (int i = 0; i < 5; i++) {
                 ClockView clockView = new ClockView(getApplicationContext());
                 if (!(i == 2)) {
                     clockView.setProperties();
+                    clockList.add(clockView);
                 }
                 else {
                     clockView.setProperties(':');
@@ -301,16 +280,27 @@ public class MainActivity extends AppCompatActivity {
             }
             ClockEdit clockEdit = new ClockEdit(getApplicationContext());
             clockInstance.addView(clockEdit);
+            clockViewOne = clockList.get(0);
+            clockViewTwo = clockList.get(1);
+            clockViewThree = clockList.get(2);
+            clockViewFour = clockList.get(3);
         }
 
-        public void setChildrenIndexes() {
-            clockViewOne = 0;
-            clockViewTwo = 1;
-            clockViewThree = 3;
-            clockViewFour = 4;
-            clockViewColon = 2;
+        public ClockView getClockViewOne() {
+            return this.clockViewOne;
         }
 
+        public ClockView getClockViewTwo() {
+            return this.clockViewTwo;
+        }
+
+        public ClockView getClockViewThree() {
+            return this.clockViewThree;
+        }
+
+        public ClockView getClockViewFour() {
+            return this.clockViewFour;
+        }
     }
 
     public class ClockView extends androidx.appcompat.widget.AppCompatEditText{
@@ -351,37 +341,37 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onTextChanged(CharSequence s, int start, int before, int count) {
-                    final LinearLayout clockInstance = ((LinearLayout) clockView.getParent());
-                    final LinearLayout todoInstance = ((LinearLayout) clockInstance.getParent());
-                    int childCount = clockInstance.getChildCount();
-                    for (int i = 0; i < childCount; i++) {
-                        if (clockInstance.getChildAt(i) == clockView) {
-                            if (i == 4) {
-                                enabler(); // Re-enables disabled views.
-                                todoInstance.getChildAt(2).setEnabled(true);
-                                todoInstance.getChildAt(2).setClickable(true);
-                                todoInstance.getChildAt(2).requestFocus();
-                            }
-                            else if (i == 1) {
-                                clockInstance.getChildAt(i + 2).setEnabled(true);
-                                clockInstance.getChildAt(i + 2).setClickable(true);
-                                clockInstance.getChildAt(i + 2).requestFocus();
-                            }
-                            else {
-                                clockInstance.getChildAt(i + 1).setEnabled(true);
-                                clockInstance.getChildAt(i + 1).setClickable(true);
-                                clockInstance.getChildAt(i + 1).requestFocus();
-                            }
-                            /*
-                             * The current clock view is specifically
-                             * disabled here to prevent the soft keyboard
-                             * from auto-hiding when switching focus to
-                             * the next view (ClockView or TodoText).
-                             */
-                            clockView.setEnabled(false);
-                            clockView.setClickable(false);
-                        }
+                    ClockInstance clockInstance = (ClockInstance) clockView.getParent();
+                    TodoInstance todoInstance = (TodoInstance) clockInstance.getParent();
+                    if (clockView == clockInstance.getClockViewOne()) {
+                        clockInstance.getClockViewTwo().setEnabled(true);
+                        clockInstance.getClockViewTwo().setClickable(true);
+                        clockInstance.getClockViewTwo().requestFocus();
                     }
+                    else if (clockView == clockInstance.getClockViewTwo()) {
+                        clockInstance.getClockViewThree().setEnabled(true);
+                        clockInstance.getClockViewThree().setClickable(true);
+                        clockInstance.getClockViewThree().requestFocus();
+                    }
+                    else if (clockView == clockInstance.getClockViewThree()) {
+                        clockInstance.getClockViewFour().setEnabled(true);
+                        clockInstance.getClockViewFour().setClickable(true);
+                        clockInstance.getClockViewFour().requestFocus();
+                    }
+                    else if (clockView == clockInstance.getClockViewFour()) {
+                        enabler();
+                        todoInstance.getTodoText().setEnabled(true);
+                        todoInstance.getTodoText().setClickable(true);
+                        todoInstance.getTodoText().requestFocus();
+                    }
+                    /*
+                     * The current clock view is specifically
+                     * disabled here to prevent the soft keyboard
+                     * from auto-hiding when switching focus to
+                     * the next view (ClockView or TodoText).
+                     */
+                    clockView.setEnabled(false);
+                    clockView.setClickable(false);
                 }
 
                 @Override
